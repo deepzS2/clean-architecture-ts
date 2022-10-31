@@ -1,6 +1,5 @@
-import { it } from "node:test";
-import { describe, expect } from "vitest";
-import { SignUpController } from "./signup";
+import { describe, expect, it } from 'vitest'
+import { SignUpController } from './signup'
 
 describe('SignUp Controller', () => {
   it('Should return 400 if no name is provided', () => {
@@ -16,5 +15,6 @@ describe('SignUp Controller', () => {
     const httpResponse = sut.handle(httpRequest)
 
     expect(httpResponse.statusCode).toBe(400)
+    expect(httpResponse.body).toEqual(new Error('Missing param: name'))
   })
 })
