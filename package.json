@@ -1,0 +1,10 @@
+{
+  "name": "clean-archictecture",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "deepzS2 <alanbackman10@hotmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "git-commit-msg-linter": "^4.2.1"
+  }
+}
