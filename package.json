@@ -6,7 +6,8 @@
   "license": "MIT",
   "scripts": {
     "test": "vitest --coverage",
-    "test:staged": "vitest run"
+    "test:staged": "vitest run",
+    "prepare": "husky install"
   },
   "devDependencies": {
     "@types/node": "^18.11.8",
@@ -18,7 +19,7 @@
     "eslint-plugin-n": "^15.0.0",
     "eslint-plugin-promise": "^6.0.0",
     "git-commit-msg-linter": "^4.2.1",
-    "husky": "^8.0.1",
+    "husky": "^8.0.0",
     "lint-staged": "^13.0.3",
     "typescript": "*",
     "vitest": "^0.24.4"
