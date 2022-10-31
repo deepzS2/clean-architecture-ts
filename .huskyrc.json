@@ -1,0 +1,6 @@
+{
+  "$schema": "https://json.schemastore.org/huskyrc.json",
+  "hooks": {
+    "pre-commit": "lint-staged"
+  }
+}
