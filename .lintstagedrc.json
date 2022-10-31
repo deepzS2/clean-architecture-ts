@@ -1,4 +1,4 @@
 {
   "$schema": "http://json.schemastore.org/lintstagedrc.schema",
-  "*.ts": ["eslint 'src/**' --fix", "git add"]
+  "*.ts": ["eslint 'src/**' --fix", "yarn run test:staged", "git add"]
 }
