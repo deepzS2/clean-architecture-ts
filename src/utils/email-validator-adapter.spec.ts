@@ -2,18 +2,15 @@ import { describe, expect, it, vitest } from 'vitest'
 import { EmailValidatorAdapter } from './email-validator-adapter'
 import validator from 'validator'
 
-vitest.mock('validator', async () => {
-  const actual = await import('validator')
-
-  const mocked = {
-    ...actual,
-    isEmail (): boolean {
-      return true
+vitest.mock('validator', async () => (
+  {
+    default: {
+      isEmail (): boolean {
+        return true
+      }
     }
   }
-
-  return mocked
-})
+))
 
 const makeSut = (): EmailValidatorAdapter => {
   return new EmailValidatorAdapter()
