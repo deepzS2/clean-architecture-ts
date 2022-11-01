@@ -10,11 +10,11 @@ vi.mock('bcrypt', async () => ({
   }
 }))
 
+const salt = 12
 const makeSut = (salt: number): BcryptAdapter => new BcryptAdapter(salt)
 
 describe('Bcrypt Adapter', () => {
   it('Should call bcrypt with correct values', async () => {
-    const salt = 12
     const sut = makeSut(salt)
     const hashSpy = vi.spyOn(bcrypt, 'hash')
 
@@ -23,7 +23,7 @@ describe('Bcrypt Adapter', () => {
   })
 
   it('Should return a hash on success', async () => {
-    const sut = makeSut(12)
+    const sut = makeSut(salt)
 
     const hash = await sut.encrypt('any_value')
     expect(hash).toBe('hash')
