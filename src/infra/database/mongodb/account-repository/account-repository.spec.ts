@@ -1,5 +1,5 @@
 import { MongoHelper } from '../helpers/mongo-helper'
-import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 import { AccountMongoRepository } from './account-repository'
 
 const makeSut = (): AccountMongoRepository => new AccountMongoRepository()
@@ -11,6 +11,11 @@ describe('Account Mongo Repository', () => {
 
   afterAll(async () => {
     await MongoHelper.disconnect()
+  })
+
+  beforeEach(async () => {
+    const accountCollection = await MongoHelper.getCollection('accounts')
+    await accountCollection.deleteMany({})
   })
 
   it('Should return an account on success', async () => {
