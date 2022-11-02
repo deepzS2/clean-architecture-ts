@@ -1,13 +1,10 @@
+import { config } from './vitest.config'
 import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
+  ...config,
   test: {
-    coverage: {
-      reporter: ['text', 'json', 'html'],
-      reportsDirectory: 'coverage'
-    },
-    dir: 'src',
-    passWithNoTests: true,
+    ...config.test,
     include: ['**/*.spec.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     silent: true
   }

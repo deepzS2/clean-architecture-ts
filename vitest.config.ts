@@ -1,12 +1,16 @@
-import { defineConfig } from 'vitest/config'
+import { defineConfig, UserConfig } from 'vitest/config'
 
-export default defineConfig({
+export const config: UserConfig = {
+
   test: {
     coverage: {
       reporter: ['text', 'json', 'html'],
       reportsDirectory: 'coverage'
     },
+    setupFiles: ['node_modules/@shelf/jest-mongodb/jest-preset'],
     dir: 'src',
     passWithNoTests: true
   }
-})
+}
+
+export default defineConfig(config)
