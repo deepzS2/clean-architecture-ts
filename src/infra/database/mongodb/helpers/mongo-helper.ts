@@ -1,4 +1,4 @@
-import { Collection, MongoClient, Document } from 'mongodb'
+import { Collection, MongoClient, Document, ObjectId } from 'mongodb'
 
 export class MongoHelper {
   public static client: MongoClient
@@ -13,5 +13,12 @@ export class MongoHelper {
 
   static getCollection<T extends Document> (name: string): Collection<T> {
     return this.client.db().collection<T>(name)
+  }
+
+  static map<T = any>(insertedId: ObjectId, data: any): T {
+    return {
+      id: insertedId.toString(),
+      ...data
+    }
   }
 }
