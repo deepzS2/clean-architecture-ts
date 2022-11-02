@@ -7,8 +7,8 @@ export const config: UserConfig = {
       reporter: ['text', 'json', 'html'],
       reportsDirectory: 'coverage'
     },
-    setupFiles: ['node_modules/@shelf/jest-mongodb/jest-preset'],
     dir: 'src',
+    setupFiles: ["./vitest-mongodb-config.ts"],
     passWithNoTests: true
   }
 }
