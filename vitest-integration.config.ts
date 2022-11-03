@@ -5,7 +5,7 @@ export default defineConfig({
   ...config,
   test: {
     ...config.test,
-    include: ['**/*.spec.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+    include: ['**/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     silent: true
   }
 })
