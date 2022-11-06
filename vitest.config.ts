@@ -5,7 +5,9 @@ export const config: UserConfig = {
   test: {
     coverage: {
       reporter: ['text', 'json', 'html'],
-      reportsDirectory: 'coverage'
+      reportsDirectory: 'coverage',
+      include: ["src/**/*.ts"],
+      exclude: ["src/main/**"]
     },
     dir: 'src',
     setupFiles: ["./vitest-mongodb-config.ts"],
