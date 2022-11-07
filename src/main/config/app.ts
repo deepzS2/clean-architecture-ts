@@ -1,10 +1,12 @@
-import express from 'express'
+import express, { Express } from 'express'
 import setupMiddlewares from './middlewares'
 import setupRoutes from './routes'
 
-const app = express()
+export const setupApp = async (): Promise<Express> => {
+  const app = express()
 
-setupMiddlewares(app)
-setupRoutes(app)
+  setupMiddlewares(app)
+  await setupRoutes(app)
 
-export default app
+  return app
+}
