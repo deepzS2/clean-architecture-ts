@@ -1,11 +1,15 @@
 import { it, describe, beforeEach, afterAll, beforeAll } from 'vitest'
 import request from 'supertest'
-import app from '../config/app'
 import { MongoHelper } from '../../infra/database/mongodb/helpers/mongo-helper'
+import { Express } from 'express'
+import { setupApp } from '../config/app'
+
+let app: Express
 
 describe('SignUp Routes', () => {
   beforeAll(async () => {
     await MongoHelper.connect(globalThis.__MONGO_URI__)
+    app = await setupApp()
   })
 
   afterAll(async () => {

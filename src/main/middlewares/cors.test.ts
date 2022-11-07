@@ -1,8 +1,15 @@
-import { it, describe } from 'vitest'
+import { it, describe, beforeAll } from 'vitest'
 import request from 'supertest'
-import app from '../config/app'
+import { Express } from 'express'
+import { setupApp } from '../config/app'
+
+let app: Express
 
 describe('CORS Middleware', () => {
+  beforeAll(async () => {
+    app = await setupApp()
+  })
+
   it('Should enable CORS', async () => {
     app.get('/test_cors', (req, res) => {
       res.send()
