@@ -1,18 +1,32 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { MissingParamError } from '../../errors'
 import { badRequest } from '../../helpers/http-helper'
 import { HttpRequest } from '../../protocols'
+import { EmailValidator } from '../signup/signup-protocols'
 import { LoginController } from './login'
 
 interface SutTypes {
   sut: LoginController
+  emailValidatorStub: EmailValidator
+}
+
+const makeEmailValidator = (): EmailValidator => {
+  class EmailValidatorStub implements EmailValidator {
+    isValid (email: string): boolean {
+      return true
+    }
+  }
+
+  return new EmailValidatorStub()
 }
 
 const makeSut = (): SutTypes => {
-  const sut = new LoginController()
+  const emailValidatorStub = makeEmailValidator()
+  const sut = new LoginController(emailValidatorStub)
 
   return {
-    sut
+    sut,
+    emailValidatorStub
   }
 }
 
@@ -41,5 +55,20 @@ describe('Login Controller', () => {
 
     const httpResponse = await sut.handle(httpRequest)
     expect(httpResponse).toEqual(badRequest(new MissingParamError('password')))
+  })
+
+  it('Should call EmailValidator with correct email', async () => {
+    const { sut, emailValidatorStub } = makeSut()
+    const isValidSpy = vi.spyOn(emailValidatorStub, 'isValid')
+
+    const httpRequest: HttpRequest = {
+      body: {
+        email: 'any_email@mail.com',
+        password: 'any_password'
+      }
+    }
+
+    await sut.handle(httpRequest)
+    expect(isValidSpy).toHaveBeenCalledWith('any_email@mail.com')
   })
 })
