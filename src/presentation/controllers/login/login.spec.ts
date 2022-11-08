@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { InvalidParamError, MissingParamError } from '../../errors'
-import { badRequest, serverError, unauthorized } from '../../helpers/http-helper'
+import { badRequest, serverError, unauthorized, ok } from '../../helpers/http-helper'
 import { LoginController } from './login'
 import { HttpRequest, EmailValidator, Authentication } from './login-protocols'
 
@@ -127,5 +127,12 @@ describe('Login Controller', () => {
 
     const httpResponse = await sut.handle(makeFakeRequest())
     expect(httpResponse).toEqual(serverError(new Error()))
+  })
+
+  it('Should 200 if valid credentials are provided', async () => {
+    const { sut } = makeSut()
+
+    const httpResponse = await sut.handle(makeFakeRequest())
+    expect(httpResponse).toEqual(ok({ accessToken: 'any_token' }))
   })
 })
