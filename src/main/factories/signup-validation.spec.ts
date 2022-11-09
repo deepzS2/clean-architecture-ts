@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
+import { CompareFieldsValidation } from '../../presentation/helpers/validators/compare-fields-validation'
 import { RequiredFieldValidation } from '../../presentation/helpers/validators/required-field-validation'
 import { Validation } from '../../presentation/helpers/validators/validation'
 import { ValidationComposite } from '../../presentation/helpers/validators/validation-composite'
@@ -16,6 +17,6 @@ describe('SignUpValidation Factory', () => {
       validations.push(new RequiredFieldValidation(field))
     }
 
-    expect(ValidationComposite).toHaveBeenCalledWith(...validations)
+    expect(ValidationComposite).toHaveBeenCalledWith(...validations, new CompareFieldsValidation('password', 'passwordConfirmation'))
   })
 })
