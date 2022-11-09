@@ -1,13 +1,13 @@
 import { describe, expect, it, vi } from 'vitest'
-import { CompareFieldsValidation } from '../../presentation/helpers/validators/compare-fields-validation'
-import { EmailValidation } from '../../presentation/helpers/validators/email-validation'
-import { RequiredFieldValidation } from '../../presentation/helpers/validators/required-field-validation'
-import { Validation } from '../../presentation/helpers/validators/validation'
-import { ValidationComposite } from '../../presentation/helpers/validators/validation-composite'
-import { EmailValidator } from '../../presentation/protocols/email-validator'
+import { CompareFieldsValidation } from '../../../presentation/helpers/validators/compare-fields-validation'
+import { EmailValidation } from '../../../presentation/helpers/validators/email-validation'
+import { RequiredFieldValidation } from '../../../presentation/helpers/validators/required-field-validation'
+import { Validation } from '../../../presentation/helpers/validators/validation'
+import { ValidationComposite } from '../../../presentation/helpers/validators/validation-composite'
+import { EmailValidator } from '../../../presentation/protocols/email-validator'
 import { makeSignUpValidation } from './signup-validation'
 
-vi.mock('../../presentation/helpers/validators/validation-composite')
+vi.mock('../../../presentation/helpers/validators/validation-composite')
 
 const makeEmailValidator = (): EmailValidator => {
   class EmailValidatorStub implements EmailValidator {
