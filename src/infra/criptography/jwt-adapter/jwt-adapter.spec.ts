@@ -31,4 +31,15 @@ describe('Jwt Adapter', () => {
 
     expect(accessToken).toBe('any_token')
   })
+
+  it('Should call sign with correct values', async () => {
+    const sut = makeSut()
+    vi.spyOn(jwt, 'sign').mockImplementationOnce(() => {
+      throw new Error()
+    })
+
+    const promise = sut.encrypt('any_id')
+
+    await expect(promise).rejects.toThrow()
+  })
 })
