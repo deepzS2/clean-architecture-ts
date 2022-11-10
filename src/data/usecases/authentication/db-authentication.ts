@@ -15,8 +15,6 @@ export class DbAuthentication implements Authentication {
 
     if (!isPasswordCorrect) return null
 
-    await this._tokenGenerator.generate(account.id)
-
-    return null
+    return await this._tokenGenerator.generate(account.id)
   }
 }
