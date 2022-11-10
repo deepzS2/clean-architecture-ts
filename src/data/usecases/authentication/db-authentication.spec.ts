@@ -134,4 +134,13 @@ describe('DbAuthentication UseCase', () => {
 
     expect(gemerateSpy).toHaveBeenCalledWith('any_id')
   })
+
+  it('Should throw if TokenGenerator throws', async () => {
+    const { sut, tokenGeneratorStub } = makeSut()
+    vi.spyOn(tokenGeneratorStub, 'generate').mockReturnValueOnce(Promise.reject(new Error()))
+
+    const promise = sut.auth(makeFakeAuthentication())
+
+    await expect(promise).rejects.toThrow()
+  })
 })
