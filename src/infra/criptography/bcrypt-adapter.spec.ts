@@ -55,4 +55,13 @@ describe('Bcrypt Adapter', () => {
     const isValid = await sut.compare('any_value', 'any_hash')
     expect(isValid).toBeTruthy()
   })
+
+  it('Should return false when compare fails', async () => {
+    const sut = makeSut(salt)
+    // @ts-expect-error
+    vi.spyOn(bcrypt, 'compare').mockReturnValueOnce(Promise.resolve(false))
+
+    const isValid = await sut.compare('any_value', 'any_hash')
+    expect(isValid).toBeFalsy()
+  })
 })
