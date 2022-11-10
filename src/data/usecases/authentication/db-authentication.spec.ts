@@ -52,4 +52,13 @@ describe('DbAuthentication UseCase', () => {
 
     expect(loadSpy).toHaveBeenCalledWith('any_email@mail.com')
   })
+
+  it('Should throw if LoadAccountByEmailRepository throws', async () => {
+    const { sut, loadAccountByEmailRepository } = makeSut()
+    vi.spyOn(loadAccountByEmailRepository, 'load').mockReturnValueOnce(Promise.reject(new Error()))
+
+    const promise = sut.auth(makeFakeAuthentication())
+
+    await expect(promise).rejects.toThrow()
+  })
 })
