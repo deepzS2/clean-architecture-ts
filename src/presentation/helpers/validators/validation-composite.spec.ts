@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { MissingParamError } from '../../errors'
-import { Validation } from './validation'
+import { Validation } from '../../protocols/validation'
 import { ValidationComposite } from './validation-composite'
 
 interface SutTypes {
