@@ -12,7 +12,7 @@ export class DbAuthentication implements Authentication {
 
     if (!isPasswordCorrect) return null
 
-    const accessToken = await this._tokenGenerator.generate(account.id)
+    const accessToken = await this._tokenGenerator.encrypt(account.id)
 
     await this._updateAccessTokenRepository.update(account.id, accessToken)
 
