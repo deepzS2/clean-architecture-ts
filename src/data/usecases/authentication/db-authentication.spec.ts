@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
+import { AuthenticationModel } from '../../../domain/usecases/authentication'
 import { LoadAccountByEmailRepository } from '../../protocols/load-account-by-email-repository'
 import { AccountModel } from '../add-account/db-add-account-protocols'
 import { DbAuthentication } from './db-authentication'
@@ -8,15 +9,17 @@ interface SutTypes {
   loadAccountByEmailRepository: LoadAccountByEmailRepository
 }
 
+const makeFakeAccount = (): AccountModel => ({
+  email: 'any_email@mail.com',
+  password: 'any_password',
+  id: 'any_id',
+  name: 'any_name'
+})
+
 const makeLoadAccountByEmailRepository = (): LoadAccountByEmailRepository => {
   class LoadAccountByEmailRepositoryStub implements LoadAccountByEmailRepository {
     async load (email: string): Promise<AccountModel> {
-      const account: AccountModel = {
-        email: 'any_email@mail.com',
-        password: 'any_password',
-        id: 'any_id',
-        name: 'any_name'
-      }
+      const account = makeFakeAccount()
 
       return await Promise.resolve(account)
     }
@@ -35,15 +38,17 @@ const makeSut = (): SutTypes => {
   }
 }
 
+const makeFakeAuthentication = (): AuthenticationModel => ({
+  email: 'any_email@mail.com',
+  password: 'any_password'
+})
+
 describe('DbAuthentication UseCase', () => {
   it('Should call LoadAccountByEmailRepository with correct email', async () => {
     const { sut, loadAccountByEmailRepository } = makeSut()
     const loadSpy = vi.spyOn(loadAccountByEmailRepository, 'load')
 
-    await sut.auth({
-      email: 'any_email@mail.com',
-      password: 'any_password'
-    })
+    await sut.auth(makeFakeAuthentication())
 
     expect(loadSpy).toHaveBeenCalledWith('any_email@mail.com')
   })
