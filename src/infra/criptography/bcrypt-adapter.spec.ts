@@ -32,10 +32,10 @@ describe('Bcrypt Adapter', () => {
     expect(hash).toBe('hash')
   })
 
-  it('Should throws if bcrypt throws', async () => {
+  it('Should throws if hash throws', async () => {
     const sut = makeSut(salt)
     // @ts-expect-error
-    vi.spyOn(bcrypt, 'hash').mockReturnValueOnce(new Promise<string>((resolve, reject) => reject(new Error())))
+    vi.spyOn(bcrypt, 'hash').mockReturnValueOnce(new Promise((resolve, reject) => reject(new Error())))
 
     const promise = sut.hash('any_value')
     await expect(promise).rejects.toThrow()
@@ -63,5 +63,14 @@ describe('Bcrypt Adapter', () => {
 
     const isValid = await sut.compare('any_value', 'any_hash')
     expect(isValid).toBeFalsy()
+  })
+
+  it('Should throws if compare throws', async () => {
+    const sut = makeSut(salt)
+    // @ts-expect-error
+    vi.spyOn(bcrypt, 'compare').mockReturnValueOnce(new Promise((resolve, reject) => reject(new Error())))
+
+    const promise = sut.compare('any_value', 'any_hash')
+    await expect(promise).rejects.toThrow()
   })
 })
