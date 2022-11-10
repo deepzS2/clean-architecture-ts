@@ -3,6 +3,7 @@ import { AuthenticationModel } from '../../../domain/usecases/authentication'
 import { HashComparer } from '../../protocols/criptography/hash-comparer'
 import { TokenGenerator } from '../../protocols/criptography/token-generator'
 import { LoadAccountByEmailRepository } from '../../protocols/db/load-account-by-email-repository'
+import { UpdateAccessTokenRepository } from '../../protocols/db/update-access-token-repository'
 import { AccountModel } from '../add-account/db-add-account-protocols'
 import { DbAuthentication } from './db-authentication'
 
@@ -11,6 +12,7 @@ interface SutTypes {
   loadAccountByEmailRepositoryStub: LoadAccountByEmailRepository
   hashComparerStub: HashComparer
   tokenGeneratorStub: TokenGenerator
+  updateAccessTokenRepositoryStub: UpdateAccessTokenRepository
 }
 
 const makeFakeAccount = (): AccountModel => ({
@@ -19,6 +21,16 @@ const makeFakeAccount = (): AccountModel => ({
   id: 'any_id',
   name: 'any_name'
 })
+
+const makeUpdateAccessTokenRepository = (): UpdateAccessTokenRepository => {
+  class UpdateAccessTokenRepositoryStub implements UpdateAccessTokenRepository {
+    async update (id: string, token: string): Promise<void> {
+      return await Promise.resolve()
+    }
+  }
+
+  return new UpdateAccessTokenRepositoryStub()
+}
 
 const makeTokenGenerator = (): TokenGenerator => {
   class TokenGeneratorStub implements TokenGenerator {
@@ -56,12 +68,14 @@ const makeSut = (): SutTypes => {
   const loadAccountByEmailRepositoryStub = makeLoadAccountByEmailRepository()
   const hashComparerStub = makeHashComparer()
   const tokenGeneratorStub = makeTokenGenerator()
-  const sut = new DbAuthentication(loadAccountByEmailRepositoryStub, hashComparerStub, tokenGeneratorStub)
+  const updateAccessTokenRepositoryStub = makeUpdateAccessTokenRepository()
+  const sut = new DbAuthentication(loadAccountByEmailRepositoryStub, hashComparerStub, tokenGeneratorStub, updateAccessTokenRepositoryStub)
 
   return {
     loadAccountByEmailRepositoryStub,
     hashComparerStub,
     tokenGeneratorStub,
+    updateAccessTokenRepositoryStub,
     sut
   }
 }
@@ -128,11 +142,11 @@ describe('DbAuthentication UseCase', () => {
 
   it('Should call TokenGenerator with correct id', async () => {
     const { sut, tokenGeneratorStub } = makeSut()
-    const gemerateSpy = vi.spyOn(tokenGeneratorStub, 'generate')
+    const generateSpy = vi.spyOn(tokenGeneratorStub, 'generate')
 
     await sut.auth(makeFakeAuthentication())
 
-    expect(gemerateSpy).toHaveBeenCalledWith('any_id')
+    expect(generateSpy).toHaveBeenCalledWith('any_id')
   })
 
   it('Should throw if TokenGenerator throws', async () => {
@@ -150,5 +164,14 @@ describe('DbAuthentication UseCase', () => {
     const accessToken = await sut.auth(makeFakeAuthentication())
 
     expect(accessToken).toBe('any_token')
+  })
+
+  it('Should call UpdateAccessTokenRepository with correct values', async () => {
+    const { sut, updateAccessTokenRepositoryStub } = makeSut()
+    const updateSpy = vi.spyOn(updateAccessTokenRepositoryStub, 'update')
+
+    await sut.auth(makeFakeAuthentication())
+
+    expect(updateSpy).toHaveBeenCalledWith('any_id', 'any_token')
   })
 })
