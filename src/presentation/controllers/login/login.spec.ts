@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { MissingParamError } from '../../errors'
 import { badRequest, serverError, unauthorized, ok } from '../../helpers/http/http-helper'
 import { LoginController } from './login'
-import { HttpRequest, Authentication, Validation } from './login-protocols'
+import { HttpRequest, Authentication, Validation, AuthenticationModel } from './login-protocols'
 
 interface SutTypes {
   sut: LoginController
@@ -12,7 +12,7 @@ interface SutTypes {
 
 const makeAuthentication = (): Authentication => {
   class AuthencationStub implements Authentication {
-    async auth (email: string, password: string): Promise<string> {
+    async auth (authentication: AuthenticationModel): Promise<string> {
       return await Promise.resolve('any_token')
     }
   }
@@ -58,7 +58,10 @@ describe('Login Controller', () => {
     const { email, password } = httpRequest.body
 
     await sut.handle(httpRequest)
-    expect(authSpy).toHaveBeenCalledWith(email, password)
+    expect(authSpy).toHaveBeenCalledWith({
+      email,
+      password
+    })
   })
 
   it('Should returns 401 if invalid credentials are provided', async () => {
