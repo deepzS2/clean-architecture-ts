@@ -5,7 +5,10 @@ import bcrypt from 'bcrypt'
 vi.mock('bcrypt', async () => ({
   default: {
     async hash (data: string, saltOrRounds: number): Promise<string> {
-      return await new Promise(resolve => resolve('hash'))
+      return await Promise.resolve('hash')
+    },
+    async compare (): Promise<boolean> {
+      return await Promise.resolve(true)
     }
   }
 }))
@@ -14,7 +17,7 @@ const salt = 12
 const makeSut = (salt: number): BcryptAdapter => new BcryptAdapter(salt)
 
 describe('Bcrypt Adapter', () => {
-  it('Should call bcrypt with correct values', async () => {
+  it('Should call hash with correct values', async () => {
     const sut = makeSut(salt)
     const hashSpy = vi.spyOn(bcrypt, 'hash')
 
@@ -22,7 +25,22 @@ describe('Bcrypt Adapter', () => {
     expect(hashSpy).toHaveBeenCalledWith('any_value', salt)
   })
 
-  it('Should return a hash on success', async () => {
+  it('Should return a hash on hash success', async () => {
+    const sut = makeSut(salt)
+
+    const hash = await sut.hash('any_value')
+    expect(hash).toBe('hash')
+  })
+
+  it('Should call compare with correct values', async () => {
+    const sut = makeSut(salt)
+    const hashSpy = vi.spyOn(bcrypt, 'compare')
+
+    await sut.compare('any_value', 'any_hash')
+    expect(hashSpy).toHaveBeenCalledWith('any_value', 'any_hash')
+  })
+
+  it('Should return a boolean on compare success', async () => {
     const sut = makeSut(salt)
 
     const hash = await sut.hash('any_value')
