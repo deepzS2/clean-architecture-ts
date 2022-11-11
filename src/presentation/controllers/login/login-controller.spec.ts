@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from 'vitest'
 import { MissingParamError } from '../../errors'
 import { badRequest, serverError, unauthorized, ok } from '../../helpers/http/http-helper'
-import { LoginController } from './login'
-import { HttpRequest, Authentication, Validation, AuthenticationModel } from './login-protocols'
+import { LoginController } from './login-controller'
+import { HttpRequest, Authentication, Validation, AuthenticationModel } from './login-controller-protocols'
 
 interface SutTypes {
   sut: LoginController

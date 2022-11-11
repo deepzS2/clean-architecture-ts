@@ -1,6 +1,6 @@
 import { MongoHelper } from '../helpers/mongo-helper'
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
-import { AccountMongoRepository } from './account-repository'
+import { AccountMongoRepository } from './account-mongo-repository'
 import { Collection } from 'mongodb'
 
 let accountCollection: Collection
