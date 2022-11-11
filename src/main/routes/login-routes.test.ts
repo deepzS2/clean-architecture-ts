@@ -6,7 +6,7 @@ import { setupApp } from '../config/app'
 
 let app: Express
 
-describe('SignUp Routes', () => {
+describe('Login Routes', () => {
   beforeAll(async () => {
     await MongoHelper.connect(globalThis.__MONGO_URI__)
     app = await setupApp()
@@ -21,12 +21,14 @@ describe('SignUp Routes', () => {
     await accountCollection.deleteMany({})
   })
 
-  it('Should return an account on success', async () => {
-    await request(app).post('/api/signup').send({
-      name: 'Alan',
-      email: 'alanr.developer@hotmail.com',
-      password: '123',
-      passwordConfirmation: '123'
-    }).expect(200)
+  describe('POST /signup', () => {
+    it('Should return 200 on signup', async () => {
+      await request(app).post('/api/signup').send({
+        name: 'Alan',
+        email: 'alanr.developer@hotmail.com',
+        password: '123',
+        passwordConfirmation: '123'
+      }).expect(200)
+    })
   })
 })
