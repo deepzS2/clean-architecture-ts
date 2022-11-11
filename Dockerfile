@@ -12,6 +12,4 @@ WORKDIR /usr/src/app
 COPY ./dist ./dist
 COPY --from=base /usr/src/app/node_modules ./node_modules
 
-EXPOSE 5000
-
 ENTRYPOINT [ "yarn", "start" ]
