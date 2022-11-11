@@ -10,6 +10,7 @@ export const config: UserConfig = {
       exclude: ["src/main/**"]
     },
     dir: 'src',
+    exclude: ["data"],
     setupFiles: ["./vitest-mongodb-config.ts"],
     passWithNoTests: true
   }

@@ -8,6 +8,7 @@
     "start": "node dist/main/server.js",
     "build": "rimraf dist && tsc",
     "dev": "sucrase-node src/main/server.ts",
+    "up": "yarn build && docker-compose up -d",
     "test": "vitest run --silent --dangerouslyIgnoreUnhandledErrors",
     "test:verbose": "vitest",
     "test:unit": "vitest -c vitest-unit.config.ts",
