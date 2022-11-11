@@ -5,6 +5,8 @@
   "author": "deepzS2",
   "license": "MIT",
   "scripts": {
+    "start": "node dist/main/server.js",
+    "build": "rimraf dist && tsc",
     "dev": "sucrase-node src/main/server.ts",
     "test": "vitest run --silent --dangerouslyIgnoreUnhandledErrors",
     "test:verbose": "vitest",
@@ -32,6 +34,7 @@
     "git-commit-msg-linter": "^4.2.1",
     "husky": "^8.0.0",
     "lint-staged": "^13.0.3",
+    "rimraf": "^3.0.2",
     "sucrase": "^3.28.0",
     "supertest": "^6.3.1",
     "typescript": "*",
