@@ -7,10 +7,10 @@ export const config: UserConfig = {
       reporter: ['text', 'json', 'html'],
       reportsDirectory: 'coverage',
       include: ["src/**/*.ts"],
-      exclude: ["src/main/**"]
+      exclude: ["src/main/**", "node_modules/**"]
     },
     dir: 'src',
-    exclude: ["data"],
+    exclude: ["data", "node_modules/**"],
     setupFiles: ["./vitest-mongodb-config.ts"],
     passWithNoTests: true
   }
