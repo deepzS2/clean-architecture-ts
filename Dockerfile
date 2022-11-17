@@ -13,4 +13,4 @@ COPY ./dist ./dist
 COPY --from=base /usr/src/app/node_modules ./node_modules
 COPY --from=base /usr/src/app/package.json ./package.json
 
-ENTRYPOINT [ "yarn", "start" ]
+ENTRYPOINT [ "yarn", "debug" ]
