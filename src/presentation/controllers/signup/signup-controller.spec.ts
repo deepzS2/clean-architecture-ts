@@ -71,13 +71,6 @@ const makeFakeRequest = (): HttpRequest => ({
   }
 })
 
-const makeFakeAccount = (): AccountModel => ({
-  id: 'valid_id',
-  name: 'valid_name',
-  email: 'valid_email@mail.com',
-  password: 'valid_password'
-})
-
 describe('SignUp Controller', () => {
   it('Should call AddAccount with correct values', async () => {
     const { sut, addAccountStub } = makeSut()
@@ -137,19 +130,19 @@ describe('SignUp Controller', () => {
     })
   })
 
-  it('Should return 200 if valid data is provided', async () => {
-    const { sut } = makeSut()
-
-    const httpResponse = await sut.handle(makeFakeRequest())
-
-    expect(httpResponse).toEqual(ok(makeFakeAccount()))
-  })
-
   it('Should returns 500 if Authentication throws', async () => {
     const { sut, authenticationStub } = makeSut()
     vi.spyOn(authenticationStub, 'auth').mockReturnValueOnce(Promise.reject(new Error()))
 
     const httpResponse = await sut.handle(makeFakeRequest())
     expect(httpResponse).toEqual(serverError(new Error()))
+  })
+
+  it('Should return 200 if valid data is provided', async () => {
+    const { sut } = makeSut()
+
+    const httpResponse = await sut.handle(makeFakeRequest())
+
+    expect(httpResponse).toEqual(ok({ accessToken: 'any_token' }))
   })
 })
