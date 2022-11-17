@@ -144,4 +144,12 @@ describe('SignUp Controller', () => {
 
     expect(httpResponse).toEqual(ok(makeFakeAccount()))
   })
+
+  it('Should returns 500 if Authentication throws', async () => {
+    const { sut, authenticationStub } = makeSut()
+    vi.spyOn(authenticationStub, 'auth').mockReturnValueOnce(Promise.reject(new Error()))
+
+    const httpResponse = await sut.handle(makeFakeRequest())
+    expect(httpResponse).toEqual(serverError(new Error()))
+  })
 })
