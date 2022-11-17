@@ -9,7 +9,7 @@ export default async (app: Express): Promise<void> => {
   app.use('/api', router)
 
   const routesPromises = readdirSync(routesPath).map(async file => {
-    if (!file.includes('.test.')) {
+    if (!file.includes('.test.') && !file.includes('.map')) {
       const { default: routesFunc } = await import(`../routes/${file}`)
 
       routesFunc(router)
