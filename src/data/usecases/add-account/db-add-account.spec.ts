@@ -44,10 +44,8 @@ const makeAddAccountRepository = (): AddAccountRepository => {
 
 const makeLoadAccountByEmailRepository = (): LoadAccountByEmailRepository => {
   class LoadAccountByEmailRepositoryStub implements LoadAccountByEmailRepository {
-    async loadByEmail (email: string): Promise<AccountModel> {
-      const account = makeFakeAccount()
-
-      return await Promise.resolve(account)
+    async loadByEmail (email: string): Promise<AccountModel | null> {
+      return await Promise.resolve(null)
     }
   }
 
@@ -107,6 +105,15 @@ describe('DbAddAccount Usecase', () => {
     await sut.add(makeFakeAccountData())
 
     expect(loadSpy).toHaveBeenCalledWith('valid_email@mail.com')
+  })
+
+  it('Should return null if LoadAccountByEmailRepository not return null', async () => {
+    const { sut, loadAccountByEmailRepositoryStub } = makeSut()
+    vi.spyOn(loadAccountByEmailRepositoryStub, 'loadByEmail').mockReturnValueOnce(Promise.resolve(makeFakeAccount()))
+
+    const account = await sut.add(makeFakeAccountData())
+
+    expect(account).toBeFalsy()
   })
 
   it('Should return an account on success', async () => {
