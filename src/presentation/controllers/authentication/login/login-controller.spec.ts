@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
-import { MissingParamError } from '../../errors'
-import { badRequest, serverError, unauthorized, ok } from '../../helpers/http/http-helper'
+import { MissingParamError } from '../../../errors'
+import { badRequest, serverError, unauthorized, ok } from '../../../helpers/http/http-helper'
 import { LoginController } from './login-controller'
 import { HttpRequest, Authentication, Validation, AuthenticationModel } from './login-controller-protocols'
 
