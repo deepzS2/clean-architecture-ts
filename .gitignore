@@ -1,4 +1,5 @@
 node_modules
 dist
 coverage
-db
+data
+!src/data
