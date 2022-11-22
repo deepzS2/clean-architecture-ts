@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { AccessDeniedError } from '../errors'
-import { forbidden } from '../helpers/http/http-helper'
+import { forbidden, ok } from '../helpers/http/http-helper'
 import { AuthMiddleware } from './auth-middleware'
 import { AccountModel, HttpRequest, LoadAccountByToken } from './auth-middleware-protocols'
 
@@ -68,5 +68,13 @@ describe('Auth Middleware', () => {
     const httpResponse = await sut.handle(makeFakeRequest())
 
     expect(httpResponse).toEqual(forbidden(new AccessDeniedError()))
+  })
+
+  it('Should return 200 if LoadAccountByToken returns an account', async () => {
+    const { sut } = makeSut()
+
+    const httpResponse = await sut.handle(makeFakeRequest())
+
+    expect(httpResponse).toEqual(ok({ accountId: 'valid_id' }))
   })
 })
