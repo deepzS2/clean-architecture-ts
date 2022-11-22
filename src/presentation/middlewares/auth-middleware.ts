@@ -3,7 +3,7 @@ import { forbidden, ok, serverError } from '../helpers/http/http-helper'
 import { HttpRequest, HttpResponse, LoadAccountByToken, Middleware } from './auth-middleware-protocols'
 
 export class AuthMiddleware implements Middleware {
-  constructor (private readonly _loadAccountByToken: LoadAccountByToken) {}
+  constructor (private readonly _loadAccountByToken: LoadAccountByToken, private readonly _role?: string) {}
 
   async handle (httpRequest: HttpRequest): Promise<HttpResponse> {
     try {
@@ -11,7 +11,7 @@ export class AuthMiddleware implements Middleware {
 
       if (!accessToken) return forbidden(new AccessDeniedError())
 
-      const account = await this._loadAccountByToken.load(accessToken)
+      const account = await this._loadAccountByToken.load(accessToken, this._role)
 
       if (!account) return forbidden(new AccessDeniedError())
 
