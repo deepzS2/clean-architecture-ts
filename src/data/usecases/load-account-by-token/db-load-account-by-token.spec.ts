@@ -62,6 +62,15 @@ describe('DbLoadAccountByToken Usecase', () => {
     expect(account).toBeFalsy()
   })
 
+  it('Should throw if Decrypter throws', async () => {
+    const { sut, decrypterStub } = makeSut()
+    vi.spyOn(decrypterStub, 'decrypt').mockReturnValueOnce(Promise.reject(new Error()))
+
+    const promise = sut.load('any_token', 'any_role')
+
+    await expect(promise).rejects.toThrow()
+  })
+
   it('Should call LoadAccountByTokenRepository with correct values', async () => {
     const { sut, loadAccountByTokenRepositoryStub } = makeSut()
     const loadByTokenSpy = vi.spyOn(loadAccountByTokenRepositoryStub, 'loadByToken')
@@ -78,6 +87,15 @@ describe('DbLoadAccountByToken Usecase', () => {
     const account = await sut.load('any_token', 'any_role')
 
     expect(account).toBeFalsy()
+  })
+
+  it('Should throw if LoadAccountByTokenRepository throws', async () => {
+    const { sut, loadAccountByTokenRepositoryStub } = makeSut()
+    vi.spyOn(loadAccountByTokenRepositoryStub, 'loadByToken').mockReturnValueOnce(Promise.reject(new Error()))
+
+    const promise = sut.load('any_token', 'any_role')
+
+    await expect(promise).rejects.toThrow()
   })
 
   it('Should return an account on success', async () => {
