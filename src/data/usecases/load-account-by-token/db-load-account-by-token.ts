@@ -8,8 +8,10 @@ export class DbLoadAccountByToken implements LoadAccountByToken {
 
     if (!token) return null
 
-    await this._loadAccountByTokenRepository.loadByToken(accessToken, role)
+    const account = await this._loadAccountByTokenRepository.loadByToken(accessToken, role)
 
-    return await Promise.resolve(null)
+    if (!account) return null
+
+    return account
   }
 }
