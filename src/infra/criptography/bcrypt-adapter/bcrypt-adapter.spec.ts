@@ -17,60 +17,64 @@ const salt = 12
 const makeSut = (salt: number): BcryptAdapter => new BcryptAdapter(salt)
 
 describe('Bcrypt Adapter', () => {
-  it('Should call hash with correct values', async () => {
-    const sut = makeSut(salt)
-    const hashSpy = vi.spyOn(bcrypt, 'hash')
+  describe('Hash', () => {
+    it('Should call hash with correct values', async () => {
+      const sut = makeSut(salt)
+      const hashSpy = vi.spyOn(bcrypt, 'hash')
 
-    await sut.hash('any_value')
-    expect(hashSpy).toHaveBeenCalledWith('any_value', salt)
+      await sut.hash('any_value')
+      expect(hashSpy).toHaveBeenCalledWith('any_value', salt)
+    })
+
+    it('Should return a hash on hash success', async () => {
+      const sut = makeSut(salt)
+
+      const hash = await sut.hash('any_value')
+      expect(hash).toBe('hash')
+    })
+
+    it('Should throws if hash throws', async () => {
+      const sut = makeSut(salt)
+      // @ts-expect-error
+      vi.spyOn(bcrypt, 'hash').mockReturnValueOnce(new Promise((resolve, reject) => reject(new Error())))
+
+      const promise = sut.hash('any_value')
+      await expect(promise).rejects.toThrow()
+    })
   })
 
-  it('Should return a hash on hash success', async () => {
-    const sut = makeSut(salt)
+  describe('Compare', () => {
+    it('Should call compare with correct values', async () => {
+      const sut = makeSut(salt)
+      const hashSpy = vi.spyOn(bcrypt, 'compare')
 
-    const hash = await sut.hash('any_value')
-    expect(hash).toBe('hash')
-  })
+      await sut.compare('any_value', 'any_hash')
+      expect(hashSpy).toHaveBeenCalledWith('any_value', 'any_hash')
+    })
 
-  it('Should throws if hash throws', async () => {
-    const sut = makeSut(salt)
-    // @ts-expect-error
-    vi.spyOn(bcrypt, 'hash').mockReturnValueOnce(new Promise((resolve, reject) => reject(new Error())))
+    it('Should return true when compare succeeds', async () => {
+      const sut = makeSut(salt)
 
-    const promise = sut.hash('any_value')
-    await expect(promise).rejects.toThrow()
-  })
+      const isValid = await sut.compare('any_value', 'any_hash')
+      expect(isValid).toBeTruthy()
+    })
 
-  it('Should call compare with correct values', async () => {
-    const sut = makeSut(salt)
-    const hashSpy = vi.spyOn(bcrypt, 'compare')
+    it('Should return false when compare fails', async () => {
+      const sut = makeSut(salt)
+      // @ts-expect-error
+      vi.spyOn(bcrypt, 'compare').mockReturnValueOnce(Promise.resolve(false))
 
-    await sut.compare('any_value', 'any_hash')
-    expect(hashSpy).toHaveBeenCalledWith('any_value', 'any_hash')
-  })
+      const isValid = await sut.compare('any_value', 'any_hash')
+      expect(isValid).toBeFalsy()
+    })
 
-  it('Should return true when compare succeeds', async () => {
-    const sut = makeSut(salt)
+    it('Should throws if compare throws', async () => {
+      const sut = makeSut(salt)
+      // @ts-expect-error
+      vi.spyOn(bcrypt, 'compare').mockReturnValueOnce(new Promise((resolve, reject) => reject(new Error())))
 
-    const isValid = await sut.compare('any_value', 'any_hash')
-    expect(isValid).toBeTruthy()
-  })
-
-  it('Should return false when compare fails', async () => {
-    const sut = makeSut(salt)
-    // @ts-expect-error
-    vi.spyOn(bcrypt, 'compare').mockReturnValueOnce(Promise.resolve(false))
-
-    const isValid = await sut.compare('any_value', 'any_hash')
-    expect(isValid).toBeFalsy()
-  })
-
-  it('Should throws if compare throws', async () => {
-    const sut = makeSut(salt)
-    // @ts-expect-error
-    vi.spyOn(bcrypt, 'compare').mockReturnValueOnce(new Promise((resolve, reject) => reject(new Error())))
-
-    const promise = sut.compare('any_value', 'any_hash')
-    await expect(promise).rejects.toThrow()
+      const promise = sut.compare('any_value', 'any_hash')
+      await expect(promise).rejects.toThrow()
+    })
   })
 })
