@@ -8,7 +8,7 @@ on:
 
 jobs:
   test:
-    name: Node ${{ matrix.node }} on ${{ matrix.os }}
+    name: Node ${{ matrix.node-version }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -39,7 +39,7 @@ jobs:
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
-        flag-name: ${{matrix.os}}-node-${{ matrix.node }}
+        flag-name: ${{ matrix.os }}-node-${{ matrix.node-version }}
         parallel: true
   
   finish:
