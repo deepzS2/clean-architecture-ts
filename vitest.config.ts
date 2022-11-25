@@ -4,7 +4,7 @@ export const config: UserConfig = {
 
   test: {
     coverage: {
-      reporter: ['text', 'json', 'html'],
+      reporter: ['text', 'json', 'html', 'lcovonly'],
       reportsDirectory: 'coverage',
       include: ["src/**/*.ts"],
       exclude: ["src/main/**", "node_modules/**"]
