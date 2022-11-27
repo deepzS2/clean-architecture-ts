@@ -1,6 +1,7 @@
-import { describe, expect, it, vi } from 'vitest'
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 import { DbLoadSurveys } from './db-load-surveys'
 import { LoadSurveysRepository, SurveyModel } from './db-load-surveys-protocols'
+import MockDate from 'mockdate'
 
 interface SutTypes {
   sut: DbLoadSurveys
@@ -45,11 +46,26 @@ const makeSut = (): SutTypes => {
 }
 
 describe('DbLoadSurveys', () => {
+  beforeAll(() => {
+    MockDate.set(new Date())
+  })
+
+  afterAll(() => {
+    MockDate.reset()
+  })
+
   it('Should call LoadSurveysRepository', async () => {
     const { sut, loadSurveysRepositoryStub } = makeSut()
     const loadAllSpy = vi.spyOn(loadSurveysRepositoryStub, 'loadAll')
 
     await sut.load()
     expect(loadAllSpy).toHaveBeenCalled()
+  })
+
+  it('Should return a list of Surveys on success', async () => {
+    const { sut } = makeSut()
+
+    const surveys = await sut.load()
+    expect(surveys).toEqual(makeFakeSurveys())
   })
 })
