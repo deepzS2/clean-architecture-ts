@@ -16,7 +16,8 @@ export class AddSurveyController implements Controller {
 
       await this._addSurvey.add({
         answers,
-        question
+        question,
+        date: new Date()
       })
 
       return noContent()
