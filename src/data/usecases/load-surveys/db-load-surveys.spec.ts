@@ -68,4 +68,13 @@ describe('DbLoadSurveys', () => {
     const surveys = await sut.load()
     expect(surveys).toEqual(makeFakeSurveys())
   })
+
+  it('Should throw if LoadSurveysRepository throws', async () => {
+    const { sut, loadSurveysRepositoryStub } = makeSut()
+    vi.spyOn(loadSurveysRepositoryStub, 'loadAll').mockReturnValueOnce(Promise.reject(new Error()))
+
+    const promise = sut.load()
+
+    await expect(promise).rejects.toThrow()
+  })
 })
