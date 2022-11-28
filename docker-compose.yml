@@ -16,6 +16,8 @@ services:
     working_dir: /usr/src/app
     command: /bin/sh -c "yarn install --production && yarn debug"
     restart: always
+    environment:
+      - MONGO_URL=mongodb://mongo:27017/clean-node-api
     volumes:
       - ./dist/:/usr/src/app/dist
       - ./package.json:/usr/src/app/package.json
