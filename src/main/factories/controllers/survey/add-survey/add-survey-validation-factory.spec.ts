@@ -1,9 +1,11 @@
 import { describe, expect, it, vi } from 'vitest'
-import { RequiredFieldValidation, ValidationComposite } from '../../../../../validation/validators'
-import { Validation } from '../../../../../presentation/protocols/validation'
+
+import { Validation } from '@/presentation/protocols/validation'
+import { RequiredFieldValidation, ValidationComposite } from '@/validation/validators'
+
 import { makeAddSurveyValidation } from './add-survey-validation-factory'
 
-vi.mock('../../../../../validation/validators/validation-composite')
+vi.mock('@/validation/validators/validation-composite')
 
 describe('AddSurveyValidation Factory', () => {
   it('Should call ValidationComposite with all validations', () => {

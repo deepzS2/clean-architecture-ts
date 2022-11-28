@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
-import { Hasher, AccountModel, AddAccountModel, AddAccountRepository, LoadAccountByEmailRepository } from './db-add-account-protocols'
+
 import { DbAddAccount } from './db-add-account'
+import { Hasher, AccountModel, AddAccountModel, AddAccountRepository, LoadAccountByEmailRepository } from './db-add-account-protocols'
 
 interface SutTypes {
   sut: DbAddAccount

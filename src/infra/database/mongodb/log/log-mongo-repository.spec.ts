@@ -1,7 +1,9 @@
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
-import { MongoHelper } from '../helpers/mongo-helper'
-import { LogErrorRepository } from '../../../../data/protocols/db/log/log-error-repository'
 import { Collection } from 'mongodb'
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
+
+import { LogErrorRepository } from '@/data/protocols/db/log/log-error-repository'
+
+import { MongoHelper } from '../helpers/mongo-helper'
 import { LogMongoRepository } from './log-mongo-repository'
 
 const makeSut = (): LogErrorRepository => {

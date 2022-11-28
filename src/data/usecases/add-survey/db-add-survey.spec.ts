@@ -1,7 +1,8 @@
+import MockDate from 'mockdate'
 import { it, describe, vi, expect, beforeAll, afterAll } from 'vitest'
+
 import { DbAddSurvey } from './db-add-survey'
 import { AddSurveyModel, AddSurveyRepository } from './db-add-survey-protocols'
-import MockDate from 'mockdate'
 
 interface SutTypes {
   sut: DbAddSurvey

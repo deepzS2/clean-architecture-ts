@@ -1,7 +1,8 @@
+import MockDate from 'mockdate'
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
+
 import { DbLoadSurveys } from './db-load-surveys'
 import { LoadSurveysRepository, SurveyModel } from './db-load-surveys-protocols'
-import MockDate from 'mockdate'
 
 interface SutTypes {
   sut: DbLoadSurveys

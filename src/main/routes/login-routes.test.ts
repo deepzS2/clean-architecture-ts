@@ -1,10 +1,11 @@
-import { it, describe, beforeEach, afterAll, beforeAll } from 'vitest'
-import request from 'supertest'
-import { MongoHelper } from '../../infra/database/mongodb/helpers/mongo-helper'
-import { Express } from 'express'
-import { setupApp } from '../config/app'
-import { Collection } from 'mongodb'
 import bcrypt from 'bcrypt'
+import { Express } from 'express'
+import { Collection } from 'mongodb'
+import request from 'supertest'
+import { it, describe, beforeEach, afterAll, beforeAll } from 'vitest'
+
+import { MongoHelper } from '@/infra/database/mongodb/helpers/mongo-helper'
+import { setupApp } from '@/main/config/app'
 
 let app: Express
 let accountCollection: Collection

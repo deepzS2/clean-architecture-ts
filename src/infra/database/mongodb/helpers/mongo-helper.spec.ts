@@ -1,5 +1,6 @@
-import { MongoHelper as sut } from './mongo-helper'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+
+import { MongoHelper as sut } from './mongo-helper'
 
 describe('Mongo Helper', () => {
   beforeAll(async () => {

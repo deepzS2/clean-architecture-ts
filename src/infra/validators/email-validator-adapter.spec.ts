@@ -1,6 +1,7 @@
-import { describe, expect, it, vitest } from 'vitest'
-import { EmailValidatorAdapter } from './email-validator-adapter'
 import validator from 'validator'
+import { describe, expect, it, vitest } from 'vitest'
+
+import { EmailValidatorAdapter } from './email-validator-adapter'
 
 vitest.mock('validator', async () => (
   {

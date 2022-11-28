@@ -1,6 +1,7 @@
-import { MongoHelper } from '../infra/database/mongodb/helpers/mongo-helper'
-import env from './config/env'
+import { MongoHelper } from '@/infra/database/mongodb/helpers/mongo-helper'
+
 import { setupApp } from './config/app'
+import env from './config/env'
 
 async function bootstrap (): Promise<void> {
   try {

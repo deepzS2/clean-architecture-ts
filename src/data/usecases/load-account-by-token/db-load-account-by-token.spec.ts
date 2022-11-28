@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
+
 import { AccountModel, Decrypter, LoadAccountByTokenRepository } from './db-load-acccount-by-token-protocols'
 import { DbLoadAccountByToken } from './db-load-account-by-token'
 

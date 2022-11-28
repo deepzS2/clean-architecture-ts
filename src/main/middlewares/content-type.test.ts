@@ -1,6 +1,7 @@
-import { it, describe, beforeAll } from 'vitest'
-import request from 'supertest'
 import { Express } from 'express'
+import request from 'supertest'
+import { it, describe, beforeAll } from 'vitest'
+
 import { setupApp } from '../config/app'
 
 let app: Express

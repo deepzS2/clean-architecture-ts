@@ -1,7 +1,8 @@
 import { defineConfig, UserConfig } from 'vitest/config'
+import tsconfigPaths from 'vite-tsconfig-paths'
 
 export const config: UserConfig = {
-
+  plugins: [tsconfigPaths()],
   test: {
     coverage: {
       reporter: ['text', 'json', 'html', 'lcovonly'],

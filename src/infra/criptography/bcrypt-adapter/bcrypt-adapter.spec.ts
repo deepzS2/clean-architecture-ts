@@ -1,6 +1,7 @@
-import { describe, expect, it, vi } from 'vitest'
-import { BcryptAdapter } from './bcrypt-adapter'
 import bcrypt from 'bcrypt'
+import { describe, expect, it, vi } from 'vitest'
+
+import { BcryptAdapter } from './bcrypt-adapter'
 
 vi.mock('bcrypt', async () => ({
   default: {

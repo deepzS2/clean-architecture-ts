@@ -1,9 +1,11 @@
+import MockDate from 'mockdate'
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
-import { SurveyModel } from '../../../../domain/models/survey'
+
+import { SurveyModel } from '@/domain/models/survey'
+import { noContent, ok, serverError } from '@/presentation/helpers/http/http-helper'
+
 import { LoadSurveysController } from './load-surveys-controller'
 import { LoadSurveys } from './load-surveys-protocols'
-import MockDate from 'mockdate'
-import { noContent, ok, serverError } from '../../../helpers/http/http-helper'
 
 interface SutTypes {
   sut: LoadSurveysController

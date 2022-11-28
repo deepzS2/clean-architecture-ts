@@ -1,11 +1,12 @@
-import { it, describe, beforeEach, afterAll, beforeAll } from 'vitest'
-import request from 'supertest'
-import { MongoHelper } from '../../infra/database/mongodb/helpers/mongo-helper'
 import { Express } from 'express'
-import { setupApp } from '../config/app'
-import { Collection } from 'mongodb'
 import { sign } from 'jsonwebtoken'
-import env from '../config/env'
+import { Collection } from 'mongodb'
+import request from 'supertest'
+import { it, describe, beforeEach, afterAll, beforeAll } from 'vitest'
+
+import { MongoHelper } from '@/infra/database/mongodb/helpers/mongo-helper'
+import { setupApp } from '@/main/config/app'
+import env from '@/main/config/env'
 
 let app: Express
 let accountCollection: Collection

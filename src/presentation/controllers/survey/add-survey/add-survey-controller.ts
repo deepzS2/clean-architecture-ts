@@ -1,5 +1,6 @@
+import { badRequest, serverError, noContent } from '@/presentation/helpers/http/http-helper'
+
 import { Controller, HttpRequest, HttpResponse, Validation, AddSurvey } from './add-survey-protocols'
-import { badRequest, serverError, noContent } from '../../../helpers/http/http-helper'
 
 export class AddSurveyController implements Controller {
   constructor (private readonly _validation: Validation, private readonly _addSurvey: AddSurvey) {}

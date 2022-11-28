@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
+
 import { AccessDeniedError } from '../errors'
 import { forbidden, ok, serverError } from '../helpers/http/http-helper'
 import { AuthMiddleware } from './auth-middleware'
