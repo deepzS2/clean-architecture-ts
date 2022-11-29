@@ -53,4 +53,12 @@ describe('DbSaveSurveyResult UseCase', () => {
 
     expect(saveSpy).toHaveBeenCalledWith(surveyData)
   })
+
+  it('Should throws if SaveSurveyResultRepository throws', async () => {
+    const { sut, saveSurveyResultRepositoryStub } = makeSut()
+    vi.spyOn(saveSurveyResultRepositoryStub, 'save').mockReturnValueOnce(Promise.reject(new Error()))
+
+    const promise = sut.save(makeFakeSurveyResultData())
+    await expect(promise).rejects.toThrow()
+  })
 })
