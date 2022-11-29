@@ -47,11 +47,19 @@ describe('DbSaveSurveyResult UseCase', () => {
   it('Should call SaveSurveyResultRepository with correct values', async () => {
     const { sut, saveSurveyResultRepositoryStub } = makeSut()
     const saveSpy = vi.spyOn(saveSurveyResultRepositoryStub, 'save')
-    const surveyData = makeFakeSurveyResultData()
+    const surveyResultData = makeFakeSurveyResultData()
 
-    await sut.save(surveyData)
+    await sut.save(surveyResultData)
 
-    expect(saveSpy).toHaveBeenCalledWith(surveyData)
+    expect(saveSpy).toHaveBeenCalledWith(surveyResultData)
+  })
+
+  it('Should return SurveyResult on success', async () => {
+    const { sut } = makeSut()
+
+    const surveyResult = await sut.save(makeFakeSurveyResultData())
+
+    expect(surveyResult).toEqual(makeFakeSurveyResult())
   })
 
   it('Should throws if SaveSurveyResultRepository throws', async () => {
