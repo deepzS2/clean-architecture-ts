@@ -29,6 +29,10 @@ export class MongoHelper {
     }
   }
 
+  static mapCollection<T = any>(collection: any[]): T[] {
+    return collection.map(c => MongoHelper.map<T>(c._id, c))
+  }
+
   private static async mongoConnect (url: string): Promise<MongoClient> {
     return await MongoClient.connect(url)
   }
