@@ -1,4 +1,5 @@
 import { Express } from 'express'
+import { sign } from 'jsonwebtoken'
 import { Collection } from 'mongodb'
 import request from 'supertest'
 import { it, describe, beforeEach, afterAll, beforeAll } from 'vitest'
@@ -6,9 +7,27 @@ import { it, describe, beforeEach, afterAll, beforeAll } from 'vitest'
 import { MongoHelper } from '@/infra/database/mongodb/helpers/mongo-helper'
 import { setupApp } from '@/main/config/app'
 
+import env from '../config/env'
+
 let app: Express
 let accountCollection: Collection
 let surveyCollection: Collection
+
+const makeAccessToken = async (): Promise<string> => {
+  const res = await accountCollection.insertOne({
+    name: 'Alan',
+    email: 'alanr.developer@hotmail.com',
+    password: '123',
+    role: 'admin'
+  })
+
+  const id = res.insertedId
+  const accessToken = await sign({ id }, env.jwtSecret)
+
+  await accountCollection.updateOne({ _id: id }, { $set: { accessToken } })
+
+  return accessToken
+}
 
 describe('Survey Result Routes', () => {
   beforeAll(async () => {
@@ -33,6 +52,29 @@ describe('Survey Result Routes', () => {
       await request(app).put('/api/surveys/any_id/results').send({
         answer: 'any_answer'
       }).expect(403)
+    })
+
+    it('Should return 200 on save survey result with accessToken', async () => {
+      const res = await surveyCollection.insertOne({
+        question: 'Question',
+        answers: [{
+          answer: 'Answer 1',
+          image: 'image'
+        }, {
+          answers: 'Answer 2'
+        }],
+        date: new Date()
+      })
+
+      const accessToken = await makeAccessToken()
+
+      await request(app)
+        .put(`/api/surveys/${res.insertedId.toString()}/results`)
+        .set('x-access-token', accessToken)
+        .send({
+          answer: 'Answer 1'
+        })
+        .expect(200)
     })
   })
 })
