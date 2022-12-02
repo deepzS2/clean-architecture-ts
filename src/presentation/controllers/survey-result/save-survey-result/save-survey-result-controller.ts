@@ -2,10 +2,10 @@ import { InvalidParamError } from '@/presentation/errors'
 import { forbidden, ok, serverError } from '@/presentation/helpers/http/http-helper'
 
 import { HttpRequest, HttpResponse } from '../../authentication/login/login-controller-protocols'
-import { Controller, LoadSurveyById } from './save-survey-result-protocols'
+import { Controller, LoadSurveyById, SaveSurveyResult } from './save-survey-result-protocols'
 
 export class SaveSurveyResultController implements Controller {
-  constructor (private readonly _loadSurveyById: LoadSurveyById) {}
+  constructor (private readonly _loadSurveyById: LoadSurveyById, private readonly _saveSurveyResult: SaveSurveyResult) {}
 
   async handle (httpRequest: HttpRequest): Promise<HttpResponse> {
     try {
@@ -24,6 +24,13 @@ export class SaveSurveyResultController implements Controller {
       if (isAnswerNotListed) {
         return forbidden(new InvalidParamError('answer'))
       }
+
+      await this._saveSurveyResult.save({
+        surveyId,
+        answer,
+        accountId: httpRequest.accountId as string,
+        date: new Date()
+      })
 
       return ok({})
     } catch (error) {
