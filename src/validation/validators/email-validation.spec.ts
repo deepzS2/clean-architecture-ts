@@ -2,6 +2,7 @@ import { describe, expect, vi, it } from 'vitest'
 
 import { InvalidParamError } from '@/presentation/errors'
 
+import { mockEmailValidator } from '../mocks'
 import { EmailValidator } from '../protocols/email-validator'
 import { EmailValidation } from './email-validation'
 
@@ -10,18 +11,8 @@ interface SutTypes {
   sut: EmailValidation
 }
 
-const makeEmailValidator = (): EmailValidator => {
-  class EmailValidatorStub implements EmailValidator {
-    isValid (email: string): boolean {
-      return true
-    }
-  }
-
-  return new EmailValidatorStub()
-}
-
 const makeSut = (): SutTypes => {
-  const emailValidatorStub = makeEmailValidator()
+  const emailValidatorStub = mockEmailValidator()
   const sut = new EmailValidation('email', emailValidatorStub)
 
   return {

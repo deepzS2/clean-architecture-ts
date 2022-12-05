@@ -1,8 +1,9 @@
 import MockDate from 'mockdate'
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 
-import { SurveyModel } from '@/domain/models/survey'
+import { mockSurveyModels } from '@/domain/mocks'
 import { noContent, ok, serverError } from '@/presentation/helpers/http/http-helper'
+import { mockLoadSurveys } from '@/presentation/mocks'
 
 import { LoadSurveysController } from './load-surveys-controller'
 import { LoadSurveys } from './load-surveys-protocols'
@@ -12,38 +13,8 @@ interface SutTypes {
   loadSurveysStub: LoadSurveys
 }
 
-const makeFakeSurveys = (): SurveyModel[] => {
-  return [{
-    id: 'any_id',
-    question: 'any_question',
-    answers: [{
-      image: 'any_image',
-      answer: 'any_answer'
-    }],
-    date: new Date()
-  }, {
-    id: 'other_id',
-    question: 'other_question',
-    answers: [{
-      image: 'other_image',
-      answer: 'other_answer'
-    }],
-    date: new Date()
-  }]
-}
-
-const makeLoadSurveysStub = (): LoadSurveys => {
-  class LoadSurveysStub implements LoadSurveys {
-    async load (): Promise<SurveyModel[]> {
-      return await Promise.resolve(makeFakeSurveys())
-    }
-  }
-
-  return new LoadSurveysStub()
-}
-
 const makeSut = (): SutTypes => {
-  const loadSurveysStub = makeLoadSurveysStub()
+  const loadSurveysStub = mockLoadSurveys()
   const sut = new LoadSurveysController(loadSurveysStub)
 
   return { sut, loadSurveysStub }
@@ -70,19 +41,19 @@ describe('LoadSurveys Controller', () => {
   it('Should return 200 on success', async () => {
     const { sut } = makeSut()
     const httpResponse = await sut.handle({})
-    expect(httpResponse).toEqual(ok(makeFakeSurveys()))
+    expect(httpResponse).toEqual(ok(mockSurveyModels()))
   })
 
   it('Should return 204 if LoadSurveys returns empty', async () => {
     const { sut, loadSurveysStub } = makeSut()
-    vi.spyOn(loadSurveysStub, 'load').mockReturnValueOnce(Promise.resolve([]))
+    vi.spyOn(loadSurveysStub, 'load').mockResolvedValueOnce([])
     const httpResponse = await sut.handle({})
     expect(httpResponse).toEqual(noContent())
   })
 
   it('Should return 500 if LoadSurveys throws', async () => {
     const { sut, loadSurveysStub } = makeSut()
-    vi.spyOn(loadSurveysStub, 'load').mockReturnValueOnce(Promise.reject(new Error()))
+    vi.spyOn(loadSurveysStub, 'load').mockRejectedValueOnce(new Error())
 
     const httpResponse = await sut.handle({})
 

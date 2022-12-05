@@ -2,9 +2,11 @@ import MockDate from 'mockdate'
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 
 import { badRequest, noContent, serverError } from '@/presentation/helpers/http/http-helper'
+import { mockValidation } from '@/presentation/mocks'
+import { mockAddSurvey } from '@/presentation/mocks'
 
 import { AddSurveyController } from './add-survey-controller'
-import { AddSurvey, AddSurveyParams, Validation, HttpRequest } from './add-survey-protocols'
+import { AddSurvey, Validation, HttpRequest } from './add-survey-protocols'
 
 interface SutTypes {
   sut: AddSurveyController
@@ -12,35 +14,15 @@ interface SutTypes {
   addSurveyStub: AddSurvey
 }
 
-const makeValidation = (): Validation => {
-  class ValidationStub implements Validation {
-    validate (input: any): Error | null {
-      return null
-    }
-  }
-
-  return new ValidationStub()
-}
-
-const makeAddSurvey = (): AddSurvey => {
-  class AddSurveyStub implements AddSurvey {
-    async add (data: AddSurveyParams): Promise<void> {
-      return await Promise.resolve()
-    }
-  }
-
-  return new AddSurveyStub()
-}
-
 const makeSut = (): SutTypes => {
-  const validationStub = makeValidation()
-  const addSurveyStub = makeAddSurvey()
+  const validationStub = mockValidation()
+  const addSurveyStub = mockAddSurvey()
   const sut = new AddSurveyController(validationStub, addSurveyStub)
 
   return { sut, validationStub, addSurveyStub }
 }
 
-const makeFakeRequest = (): HttpRequest => ({
+const mockRequest = (): HttpRequest => ({
   body: {
     question: 'any_question',
     answers: [{
@@ -64,7 +46,7 @@ describe('AddSurvey Controller', () => {
     const { sut, validationStub } = makeSut()
     const validateSpy = vi.spyOn(validationStub, 'validate')
 
-    const httpRequest = makeFakeRequest()
+    const httpRequest = mockRequest()
 
     await sut.handle(httpRequest)
 
@@ -75,7 +57,7 @@ describe('AddSurvey Controller', () => {
     const { sut, validationStub } = makeSut()
     vi.spyOn(validationStub, 'validate').mockReturnValueOnce(new Error())
 
-    const httpRequest = makeFakeRequest()
+    const httpRequest = mockRequest()
 
     const httpResponse = await sut.handle(httpRequest)
 
@@ -86,7 +68,7 @@ describe('AddSurvey Controller', () => {
     const { sut, addSurveyStub } = makeSut()
     const addSpy = vi.spyOn(addSurveyStub, 'add')
 
-    const httpRequest = makeFakeRequest()
+    const httpRequest = mockRequest()
 
     await sut.handle(httpRequest)
 
@@ -95,9 +77,9 @@ describe('AddSurvey Controller', () => {
 
   it('Should return 500 if AddSurveyUseCase throws', async () => {
     const { sut, addSurveyStub } = makeSut()
-    vi.spyOn(addSurveyStub, 'add').mockReturnValueOnce(Promise.reject(new Error()))
+    vi.spyOn(addSurveyStub, 'add').mockRejectedValueOnce(new Error())
 
-    const httpResponse = await sut.handle(makeFakeRequest())
+    const httpResponse = await sut.handle(mockRequest())
 
     expect(httpResponse).toEqual(serverError(new Error()))
   })
@@ -105,7 +87,7 @@ describe('AddSurvey Controller', () => {
   it('Should return 204 on success', async () => {
     const { sut } = makeSut()
 
-    const httpResponse = await sut.handle(makeFakeRequest())
+    const httpResponse = await sut.handle(mockRequest())
 
     expect(httpResponse).toEqual(noContent())
   })

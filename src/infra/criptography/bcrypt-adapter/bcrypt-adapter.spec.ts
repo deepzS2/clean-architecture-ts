@@ -36,8 +36,7 @@ describe('Bcrypt Adapter', () => {
 
     it('Should throws if hash throws', async () => {
       const sut = makeSut(salt)
-      // @ts-expect-error
-      vi.spyOn(bcrypt, 'hash').mockReturnValueOnce(new Promise((resolve, reject) => reject(new Error())))
+      vi.spyOn(bcrypt, 'hash').mockRejectedValueOnce(new Error())
 
       const promise = sut.hash('any_value')
       await expect(promise).rejects.toThrow()
@@ -63,7 +62,7 @@ describe('Bcrypt Adapter', () => {
     it('Should return false when compare fails', async () => {
       const sut = makeSut(salt)
       // @ts-expect-error
-      vi.spyOn(bcrypt, 'compare').mockReturnValueOnce(Promise.resolve(false))
+      vi.spyOn(bcrypt, 'compare').mockResolvedValueOnce(false)
 
       const isValid = await sut.compare('any_value', 'any_hash')
       expect(isValid).toBeFalsy()
@@ -71,8 +70,7 @@ describe('Bcrypt Adapter', () => {
 
     it('Should throws if compare throws', async () => {
       const sut = makeSut(salt)
-      // @ts-expect-error
-      vi.spyOn(bcrypt, 'compare').mockReturnValueOnce(new Promise((resolve, reject) => reject(new Error())))
+      vi.spyOn(bcrypt, 'compare').mockRejectedValueOnce(new Error())
 
       const promise = sut.compare('any_value', 'any_hash')
       await expect(promise).rejects.toThrow()

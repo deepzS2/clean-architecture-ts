@@ -1,6 +1,9 @@
 import { describe, expect, it, vi } from 'vitest'
 
-import { AccountModel, Decrypter, LoadAccountByTokenRepository } from './db-load-acccount-by-token-protocols'
+import { mockDecrypter, mockLoadAccountByTokenRepository } from '@/data/mocks'
+import { mockAccountModel } from '@/domain/mocks'
+
+import { Decrypter, LoadAccountByTokenRepository } from './db-load-acccount-by-token-protocols'
 import { DbLoadAccountByToken } from './db-load-account-by-token'
 
 interface SutTypes {
@@ -9,36 +12,9 @@ interface SutTypes {
   loadAccountByTokenRepositoryStub: LoadAccountByTokenRepository
 }
 
-const makeFakeAccount = (): AccountModel => ({
-  id: 'valid_id',
-  name: 'valid_name',
-  email: 'valid_email@mail.com',
-  password: 'hashed_password'
-})
-
-const makeLoadAccountByTokenRepository = (): LoadAccountByTokenRepository => {
-  class LoadAccountByTokenRepositoryStub implements LoadAccountByTokenRepository {
-    async loadByToken (token: string, role?: string): Promise<AccountModel | null> {
-      return await Promise.resolve(makeFakeAccount())
-    }
-  }
-
-  return new LoadAccountByTokenRepositoryStub()
-}
-
-const makeDecrypter = (): Decrypter => {
-  class DecrypterStub implements Decrypter {
-    async decrypt (value: string): Promise<string> {
-      return await Promise.resolve('any_value')
-    }
-  }
-
-  return new DecrypterStub()
-}
-
 const makeSut = (): SutTypes => {
-  const decrypterStub = makeDecrypter()
-  const loadAccountByTokenRepositoryStub = makeLoadAccountByTokenRepository()
+  const decrypterStub = mockDecrypter()
+  const loadAccountByTokenRepositoryStub = mockLoadAccountByTokenRepository()
   const sut = new DbLoadAccountByToken(decrypterStub, loadAccountByTokenRepositoryStub)
 
   return { sut, decrypterStub, loadAccountByTokenRepositoryStub }
@@ -56,7 +32,7 @@ describe('DbLoadAccountByToken Usecase', () => {
 
   it('Should return null if Decrypter returns null', async () => {
     const { sut, decrypterStub } = makeSut()
-    vi.spyOn(decrypterStub, 'decrypt').mockReturnValueOnce(Promise.resolve(null))
+    vi.spyOn(decrypterStub, 'decrypt').mockResolvedValueOnce(null)
 
     const account = await sut.load('any_token', 'any_role')
 
@@ -65,7 +41,7 @@ describe('DbLoadAccountByToken Usecase', () => {
 
   it('Should throw if Decrypter throws', async () => {
     const { sut, decrypterStub } = makeSut()
-    vi.spyOn(decrypterStub, 'decrypt').mockReturnValueOnce(Promise.reject(new Error()))
+    vi.spyOn(decrypterStub, 'decrypt').mockRejectedValueOnce(new Error())
 
     const promise = sut.load('any_token', 'any_role')
 
@@ -83,7 +59,7 @@ describe('DbLoadAccountByToken Usecase', () => {
 
   it('Should return null if LoadAccountByTokenRepository returns null', async () => {
     const { sut, loadAccountByTokenRepositoryStub } = makeSut()
-    vi.spyOn(loadAccountByTokenRepositoryStub, 'loadByToken').mockReturnValueOnce(Promise.resolve(null))
+    vi.spyOn(loadAccountByTokenRepositoryStub, 'loadByToken').mockResolvedValueOnce(null)
 
     const account = await sut.load('any_token', 'any_role')
 
@@ -92,7 +68,7 @@ describe('DbLoadAccountByToken Usecase', () => {
 
   it('Should throw if LoadAccountByTokenRepository throws', async () => {
     const { sut, loadAccountByTokenRepositoryStub } = makeSut()
-    vi.spyOn(loadAccountByTokenRepositoryStub, 'loadByToken').mockReturnValueOnce(Promise.reject(new Error()))
+    vi.spyOn(loadAccountByTokenRepositoryStub, 'loadByToken').mockRejectedValueOnce(new Error())
 
     const promise = sut.load('any_token', 'any_role')
 
@@ -104,6 +80,6 @@ describe('DbLoadAccountByToken Usecase', () => {
 
     const account = await sut.load('any_token', 'any_role')
 
-    expect(account).toEqual(makeFakeAccount())
+    expect(account).toEqual(mockAccountModel())
   })
 })

@@ -1,7 +1,8 @@
 import { describe, expect, it, vi } from 'vitest'
 
+import { mockLogErrorRepository } from '@/data/mocks'
 import { LogErrorRepository } from '@/data/protocols/db/log/log-error-repository'
-import { AccountModel } from '@/domain/models/account'
+import { mockAccountModel } from '@/domain/mocks'
 import { ok, serverError } from '@/presentation/helpers/http/http-helper'
 import { Controller, HttpRequest, HttpResponse } from '@/presentation/protocols'
 
@@ -13,13 +14,6 @@ interface SutTypes {
   logErrorRepositoryStub: LogErrorRepository
 }
 
-const makeFakeAccount = (): AccountModel => ({
-  id: 'valid_id',
-  name: 'valid_name',
-  email: 'valid_email@mail.com',
-  password: 'valid_password'
-})
-
 const makeFakeServerError = (): HttpResponse => {
   const fakeError = new Error()
   fakeError.stack = 'any_stack'
@@ -30,32 +24,22 @@ const makeFakeServerError = (): HttpResponse => {
 const makeControllerStub = (): Controller => {
   class ControllerStub implements Controller {
     async handle (httpRequest: HttpRequest): Promise<HttpResponse> {
-      return await new Promise(resolve => resolve(ok(makeFakeAccount())))
+      return await Promise.resolve(ok(mockAccountModel()))
     }
   }
 
   return new ControllerStub()
 }
 
-const makeLogErrorRepository = (): LogErrorRepository => {
-  class LogErrorRepositoryStub implements LogErrorRepository {
-    async logError (stackError: string): Promise<void> {
-      return await new Promise(resolve => resolve())
-    }
-  }
-
-  return new LogErrorRepositoryStub()
-}
-
 const makeSut = (): SutTypes => {
   const controllerStub = makeControllerStub()
-  const logErrorRepositoryStub = makeLogErrorRepository()
+  const logErrorRepositoryStub = mockLogErrorRepository()
   const sut = new LogControllerDecorator(controllerStub, logErrorRepositoryStub)
 
   return { sut, controllerStub, logErrorRepositoryStub }
 }
 
-const makeFakeRequest = (): HttpRequest => ({
+const mockRequest = (): HttpRequest => ({
   body: {
     email: 'any_mail@mail.com',
     name: 'any_name',
@@ -69,7 +53,7 @@ describe('LogController Decorator', () => {
     const { sut, controllerStub } = makeSut()
     const handleSpy = vi.spyOn(controllerStub, 'handle')
 
-    const httpRequest = makeFakeRequest()
+    const httpRequest = mockRequest()
     await sut.handle(httpRequest)
 
     expect(handleSpy).toHaveBeenCalledWith(httpRequest)
@@ -78,9 +62,9 @@ describe('LogController Decorator', () => {
   it('Should return the same result of the controller', async () => {
     const { sut } = makeSut()
 
-    const result = await sut.handle(makeFakeRequest())
+    const result = await sut.handle(mockRequest())
 
-    expect(result).toEqual(ok(makeFakeAccount()))
+    expect(result).toEqual(ok(mockAccountModel()))
   })
 
   it('Should call LogErrorRepository with correct error if controller returns a server error', async () => {
@@ -88,9 +72,9 @@ describe('LogController Decorator', () => {
 
     const logSpy = vi.spyOn(logErrorRepositoryStub, 'logError')
 
-    vi.spyOn(controllerStub, 'handle').mockReturnValueOnce(new Promise(resolve => resolve(makeFakeServerError())))
+    vi.spyOn(controllerStub, 'handle').mockResolvedValueOnce(makeFakeServerError())
 
-    await sut.handle(makeFakeRequest())
+    await sut.handle(mockRequest())
 
     expect(logSpy).toHaveBeenCalledWith('any_stack')
   })
