@@ -2,14 +2,14 @@ import MockDate from 'mockdate'
 import { it, describe, vi, expect, beforeAll, afterAll } from 'vitest'
 
 import { DbSaveSurveyResult } from './db-save-survey-result'
-import { SaveSurveyResultModel, SaveSurveyResultRepository, SurveyResultModel } from './db-save-survey-result-protocols'
+import { SaveSurveyResultParams, SaveSurveyResultRepository, SurveyResultModel } from './db-save-survey-result-protocols'
 
 interface SutTypes {
   sut: DbSaveSurveyResult
   saveSurveyResultRepositoryStub: SaveSurveyResultRepository
 }
 
-const makeFakeSurveyResultData = (): SaveSurveyResultModel => ({
+const makeFakeSurveyResultData = (): SaveSurveyResultParams => ({
   accountId: 'any_account_id',
   surveyId: 'any_survey_id',
   answer: 'any_answer',
@@ -20,7 +20,7 @@ const makeFakeSurveyResult = (): SurveyResultModel => ({ ...makeFakeSurveyResult
 
 const makeSaveSurveyRepository = (): SaveSurveyResultRepository => {
   class SaveSurveyResultRepositoryStub implements SaveSurveyResultRepository {
-    async save (data: SaveSurveyResultModel): Promise<SurveyResultModel> {
+    async save (data: SaveSurveyResultParams): Promise<SurveyResultModel> {
       return await Promise.resolve(makeFakeSurveyResult())
     }
   }

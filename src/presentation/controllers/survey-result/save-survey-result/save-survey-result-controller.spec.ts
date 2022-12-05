@@ -5,7 +5,7 @@ import { InvalidParamError } from '@/presentation/errors'
 import { forbidden, ok, serverError } from '@/presentation/helpers/http/http-helper'
 
 import { SaveSurveyResultController } from './save-survey-result-controller'
-import { HttpRequest, LoadSurveyById, SaveSurveyResult, SaveSurveyResultModel, SurveyModel, SurveyResultModel } from './save-survey-result-protocols'
+import { HttpRequest, LoadSurveyById, SaveSurveyResult, SaveSurveyResultParams, SurveyModel, SurveyResultModel } from './save-survey-result-protocols'
 
 interface SutTypes {
   sut: SaveSurveyResultController
@@ -43,7 +43,7 @@ const makeLoadSurveyById = (): LoadSurveyById => {
 
 const makeSaveSurveyResult = (): SaveSurveyResult => {
   class SaveSurveyResultStub implements SaveSurveyResult {
-    async save (data: SaveSurveyResultModel): Promise<SurveyResultModel> {
+    async save (data: SaveSurveyResultParams): Promise<SurveyResultModel> {
       return await Promise.resolve(makeFakeSurveyResult())
     }
   }

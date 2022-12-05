@@ -4,7 +4,7 @@ import { EmailInUseError, MissingParamError, ServerError } from '@/presentation/
 import { badRequest, forbidden, ok, serverError } from '@/presentation/helpers/http/http-helper'
 
 import { SignUpController } from './signup-controller'
-import { AddAccount, AddAccountModel, AccountModel, HttpRequest, Validation, Authentication, AuthenticationModel } from './signup-controller-protocols'
+import { AddAccount, AddAccountParams, AccountModel, HttpRequest, Validation, Authentication, AuthenticationParams } from './signup-controller-protocols'
 
 interface SutTypes {
   sut: SignUpController
@@ -15,7 +15,7 @@ interface SutTypes {
 
 const makeAddAccount = (): AddAccount => {
   class AddAccountStub implements AddAccount {
-    async add (account: AddAccountModel): Promise<AccountModel> {
+    async add (account: AddAccountParams): Promise<AccountModel> {
       const fakeAccount = {
         id: 'valid_id',
         name: 'valid_name',
@@ -42,7 +42,7 @@ const makeValidation = (): Validation => {
 
 const makeAuthentication = (): Authentication => {
   class AuthencationStub implements Authentication {
-    async auth (authentication: AuthenticationModel): Promise<string> {
+    async auth (authentication: AuthenticationParams): Promise<string> {
       return await Promise.resolve('any_token')
     }
   }

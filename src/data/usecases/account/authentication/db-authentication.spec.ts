@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 
 import { DbAuthentication } from './db-authentication'
-import { AccountModel, AuthenticationModel, HashComparer, LoadAccountByEmailRepository, Encrypter, UpdateAccessTokenRepository } from './db-authentication-protocols'
+import { AccountModel, AuthenticationParams, HashComparer, LoadAccountByEmailRepository, Encrypter, UpdateAccessTokenRepository } from './db-authentication-protocols'
 
 interface SutTypes {
   sut: DbAuthentication
@@ -76,7 +76,7 @@ const makeSut = (): SutTypes => {
   }
 }
 
-const makeFakeAuthentication = (): AuthenticationModel => ({
+const makeFakeAuthentication = (): AuthenticationParams => ({
   email: 'any_email@mail.com',
   password: 'any_password'
 })

@@ -2,7 +2,7 @@ import MockDate from 'mockdate'
 import { it, describe, vi, expect, beforeAll, afterAll } from 'vitest'
 
 import { DbAddSurvey } from './db-add-survey'
-import { AddSurveyModel, AddSurveyRepository } from './db-add-survey-protocols'
+import { AddSurveyParams, AddSurveyRepository } from './db-add-survey-protocols'
 
 interface SutTypes {
   sut: DbAddSurvey
@@ -11,7 +11,7 @@ interface SutTypes {
 
 const makeAddSurveyRepository = (): AddSurveyRepository => {
   class AddSurveyRepositoryStub implements AddSurveyRepository {
-    async add (surveyData: AddSurveyModel): Promise<void> {
+    async add (surveyData: AddSurveyParams): Promise<void> {
       return await Promise.resolve()
     }
   }
@@ -26,7 +26,7 @@ const makeSut = (): SutTypes => {
   return { sut, addSurveyRepositoryStub }
 }
 
-const makeFakeSurveyData = (): AddSurveyModel => ({
+const makeFakeSurveyData = (): AddSurveyParams => ({
   question: 'any_question',
   answers: [
     {

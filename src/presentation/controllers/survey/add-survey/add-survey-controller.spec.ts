@@ -4,7 +4,7 @@ import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 import { badRequest, noContent, serverError } from '@/presentation/helpers/http/http-helper'
 
 import { AddSurveyController } from './add-survey-controller'
-import { AddSurvey, AddSurveyModel, Validation, HttpRequest } from './add-survey-protocols'
+import { AddSurvey, AddSurveyParams, Validation, HttpRequest } from './add-survey-protocols'
 
 interface SutTypes {
   sut: AddSurveyController
@@ -24,7 +24,7 @@ const makeValidation = (): Validation => {
 
 const makeAddSurvey = (): AddSurvey => {
   class AddSurveyStub implements AddSurvey {
-    async add (data: AddSurveyModel): Promise<void> {
+    async add (data: AddSurveyParams): Promise<void> {
       return await Promise.resolve()
     }
   }
