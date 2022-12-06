@@ -8,7 +8,12 @@ export const config: UserConfig = {
       reporter: ['text', 'json', 'html', 'lcovonly'],
       reportsDirectory: 'coverage',
       include: ["src/**/*.ts"],
-      exclude: ["src/main/**", "node_modules/**"]
+      exclude: [
+        "src/main/**", 
+        "**/mocks/*", 
+        '**/*{.,-}test.{js,cjs,mjs,ts,tsx,jsx}',
+        '**/*{.,-}spec.{js,cjs,mjs,ts,tsx,jsx}'
+      ]
     },
     dir: 'src',
     exclude: ["db", "node_modules/**"],

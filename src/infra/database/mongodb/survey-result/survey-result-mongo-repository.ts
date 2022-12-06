@@ -5,7 +5,7 @@ import { SaveSurveyResultParams } from '@/domain/usecases/survey-result/save-sur
 import { MongoHelper } from '../helpers/mongo-helper'
 
 export class SurveyResultMongoRepository implements SaveSurveyResultRepository {
-  async save (data: SaveSurveyResultParams): Promise<SurveyResultModel> {
+  async save (data: SaveSurveyResultParams): Promise<SurveyResultModel | null> {
     const surveyResultCollection = await MongoHelper.getCollection<SurveyResultModel>('surveysResults')
 
     const result = await surveyResultCollection.findOneAndUpdate({
@@ -20,10 +20,6 @@ export class SurveyResultMongoRepository implements SaveSurveyResultRepository {
       upsert: true,
       returnDocument: 'after'
     })
-
-    if (!result.ok || !result.value) {
-      throw new Error(`Error upserting survey result: ${JSON.stringify(result.lastErrorObject)}`)
-    }
 
     return result.value && MongoHelper.map<SurveyResultModel>(result.value._id, result.value)
   }

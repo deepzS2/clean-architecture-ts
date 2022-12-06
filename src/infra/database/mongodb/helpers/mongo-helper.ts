@@ -4,8 +4,8 @@ export class MongoHelper {
   public static client: MongoClient | null
   public static url: string = ''
 
-  static async connect (url?: string): Promise<void> {
-    this.url = url ?? ''
+  static async connect (url = ''): Promise<void> {
+    this.url = url
     this.client = await this.mongoConnect(this.url)
   }
 
