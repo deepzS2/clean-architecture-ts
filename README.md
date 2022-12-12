@@ -2,7 +2,7 @@
 
 <div align="center">
   <a href='https://github.com/deepzS2/clean-architecture-ts/actions/workflows/node.js.yml'><img src='https://github.com/deepzS2/clean-architecture-ts/actions/workflows/node.js.yml/badge.svg' alt='Build' /></a>
-  <a href='https://coveralls.io/github/deepzS2/clean-archictecture-ts?branch=main'><img src='https://coveralls.io/repos/github/deepzS2/clean-archictecture-ts/badge.svg?branch=main' alt='Coverage Status' /></a>
+  <a href='https://coveralls.io/github/deepzS2/clean-architecture-ts?branch=main&service'><img src='https://coveralls.io/repos/github/deepzS2/clean-architecture-ts/badge.svg?branch=main&service=github' alt='Coverage Status' /></a>
 </div>
 
 <p align="center">Learning about Clean Architecture with Typescript (Node.js), applying Design Patterns, Test-Driven Development, Domain Driven Design, SOLID, etc.</p>
