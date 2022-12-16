@@ -31,7 +31,7 @@ describe('DbSaveSurveyResult UseCase', () => {
   it('Should call SaveSurveyResultRepository with correct values', async () => {
     const { sut, saveSurveyResultRepositoryStub } = makeSut()
     const saveSpy = vi.spyOn(saveSurveyResultRepositoryStub, 'save')
-    const surveyResultData = mockSurveyResultModel()
+    const surveyResultData = mockSaveSurveyResultParams()
 
     await sut.save(surveyResultData)
 

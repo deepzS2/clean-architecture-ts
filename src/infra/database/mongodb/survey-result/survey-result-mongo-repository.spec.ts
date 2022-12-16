@@ -27,7 +27,7 @@ const makeSurvey = async (): Promise<SurveyModel> => {
 
   const res = await surveyCollection.insertOne(model)
 
-  return { id: res.insertedId.toString(), ...model }
+  return MongoHelper.map<SurveyModel>(res.insertedId, model)
 }
 
 const makeAccount = async (): Promise<AccountModel> => {
@@ -39,7 +39,7 @@ const makeAccount = async (): Promise<AccountModel> => {
 
   const res = await accountCollection.insertOne(model)
 
-  return { id: res.insertedId.toString(), ...model }
+  return MongoHelper.map<AccountModel>(res.insertedId, model)
 }
 
 describe('Survey Mongo Repository', () => {
@@ -76,8 +76,10 @@ describe('Survey Mongo Repository', () => {
       })
 
       expect(surveyResult).toBeTruthy()
-      expect(surveyResult?.id).toBeTruthy()
-      expect(surveyResult?.answer).toBe(survey.answers[0].answer)
+      expect(surveyResult?.surveyId).toEqual(survey.id)
+      expect(surveyResult?.answers[0].answer).toBe(survey.answers[0].answer)
+      expect(surveyResult?.answers[0].count).toBe(1)
+      expect(surveyResult?.answers[0].percent).toBe(100)
     })
 
     it('Should update survey result if its not new', async () => {
@@ -85,7 +87,7 @@ describe('Survey Mongo Repository', () => {
       const survey = await makeSurvey()
       const account = await makeAccount()
 
-      const res = await surveyResultCollection.insertOne({
+      await surveyResultCollection.insertOne({
         answer: survey.answers[0].answer,
         date: new Date(),
         accountId: account.id,
@@ -100,8 +102,10 @@ describe('Survey Mongo Repository', () => {
       })
 
       expect(surveyResult).toBeTruthy()
-      expect(surveyResult?.id).toEqual(res.insertedId.toString())
-      expect(surveyResult?.answer).toBe(survey.answers[1].answer)
+      expect(surveyResult?.surveyId).toEqual(survey.id)
+      expect(surveyResult?.answers[0].answer).toBe(survey.answers[1].answer)
+      expect(surveyResult?.answers[0].count).toBe(1)
+      expect(surveyResult?.answers[0].percent).toBe(100)
     })
   })
 })
