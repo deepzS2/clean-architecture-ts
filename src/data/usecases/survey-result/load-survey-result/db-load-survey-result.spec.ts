@@ -1,4 +1,5 @@
-import { describe, expect, it, vi } from 'vitest'
+import MockDate from 'mockdate'
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 
 import { mockLoadSurveyResultRepository } from '@/data/mocks'
 import { mockSurveyResultModel } from '@/domain/mocks'
@@ -19,6 +20,14 @@ const makeSut = (): SutTypes => {
 }
 
 describe('DbLoadSurveyResult UseCase', () => {
+  beforeAll(() => {
+    MockDate.set(new Date())
+  })
+
+  afterAll(() => {
+    MockDate.reset()
+  })
+
   it('Should call LoadSurveyResultRepository', async () => {
     const { sut, loadSurveyResultRepositoryStub } = makeSut()
     const loadBySurveyIdSpy = vi.spyOn(loadSurveyResultRepositoryStub, 'loadBySurveyId')
