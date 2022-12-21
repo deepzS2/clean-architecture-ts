@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 
 import { mockLoadSurveyResultRepository } from '@/data/mocks'
+import { mockSurveyResultModel } from '@/domain/mocks'
 
 import { DbLoadSurveyResult } from './db-load-survey-result'
 import { LoadSurveyResultRepository } from './db-load-survey-result-protocols'
@@ -33,5 +34,13 @@ describe('DbLoadSurveyResult UseCase', () => {
 
     const promise = sut.load('any_survey_id')
     await expect(promise).rejects.toThrow()
+  })
+
+  it('Should return SurveyResultModel on success', async () => {
+    const { sut } = makeSut()
+
+    const result = await sut.load('any_survey_id')
+
+    expect(result).toEqual(mockSurveyResultModel())
   })
 })
