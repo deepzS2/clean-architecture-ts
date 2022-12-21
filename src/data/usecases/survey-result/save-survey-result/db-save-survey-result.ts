@@ -1,11 +1,11 @@
-import { SaveSurveyResult, SaveSurveyResultParams, SaveSurveyResultRepository, SurveyResultModel } from './db-save-survey-result-protocols'
+import { LoadSurveyResultRepository, SaveSurveyResult, SaveSurveyResultParams, SaveSurveyResultRepository, SurveyResultModel } from './db-save-survey-result-protocols'
 
 export class DbSaveSurveyResult implements SaveSurveyResult {
-  constructor (private readonly _saveSurveyResultRepository: SaveSurveyResultRepository) {}
+  constructor (private readonly _saveSurveyResultRepository: SaveSurveyResultRepository, private readonly _loadSurveyResultRepository: LoadSurveyResultRepository) {}
 
   async save (data: SaveSurveyResultParams): Promise<SurveyResultModel | null> {
-    const result = await this._saveSurveyResultRepository.save(data)
+    await this._saveSurveyResultRepository.save(data)
 
-    return result
+    return await this._loadSurveyResultRepository.loadBySurveyId(data.surveyId)
   }
 }

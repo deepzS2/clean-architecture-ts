@@ -61,7 +61,7 @@ describe('Survey Result Routes', () => {
           answer: 'Answer 1',
           image: 'image'
         }, {
-          answers: 'Answer 2'
+          answer: 'Answer 2'
         }],
         date: new Date()
       })
