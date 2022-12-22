@@ -3406,6 +3406,11 @@ module-alias@^2.2.2:
   resolved "https://registry.yarnpkg.com/module-alias/-/module-alias-2.2.2.tgz#151cdcecc24e25739ff0aa6e51e1c5716974c0e0"
   integrity sha512-A/78XjoX2EmNvppVWEhM2oGk3x4lLxnkEA4jTbaK97QKSDjkIoOsKQlfylt/d3kKKi596Qy3NP5XrXJ6fZIC9Q==
 
+mongo-round@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/mongo-round/-/mongo-round-1.0.0.tgz#9f22fed68480d61443dca3ebf5587e82c3004193"
+  integrity sha512-lwvLJv827Uks+3HnTOt1I/Qr78Avke3du1oMaFqFpTwtRKtOposNOKkfpGXQN4ZGpRN3XAS8fEppIJ4TUj0xQw==
+
 mongodb-connection-string-url@^2.5.4:
   version "2.6.0"
   resolved "https://registry.yarnpkg.com/mongodb-connection-string-url/-/mongodb-connection-string-url-2.6.0.tgz#57901bf352372abdde812c81be47b75c6b2ec5cf"

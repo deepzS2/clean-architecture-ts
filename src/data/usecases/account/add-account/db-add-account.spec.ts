@@ -67,8 +67,6 @@ describe('DbAddAccount Usecase', () => {
 
     await sut.add(addAccountParams)
 
-    console.log(loadAccountByEmailRepositorySpy)
-
     expect(loadAccountByEmailRepositorySpy.email).toBe(addAccountParams.email)
   })
 

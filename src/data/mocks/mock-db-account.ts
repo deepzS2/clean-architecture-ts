@@ -24,8 +24,6 @@ export class LoadAccountByEmailRepositorySpy implements LoadAccountByEmailReposi
   async loadByEmail (email: string): Promise<AccountModel | null> {
     this.email = email
 
-    console.log(this.email)
-
     return await Promise.resolve(this.accountModel)
   }
 }
