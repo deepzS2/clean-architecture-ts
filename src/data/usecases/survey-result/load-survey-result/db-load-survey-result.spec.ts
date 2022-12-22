@@ -58,6 +58,16 @@ describe('DbLoadSurveyResult UseCase', () => {
     expect(loadByIdSpy).toHaveBeenCalledWith('any_survey_id')
   })
 
+  it('Should return SurveyResultModel with all answers with count 0 if LoadSurveyResultRepository returns null', async () => {
+    const { sut, loadSurveyResultRepositoryStub } = makeSut()
+
+    vi.spyOn(loadSurveyResultRepositoryStub, 'loadBySurveyId').mockResolvedValueOnce(null)
+
+    const result = await sut.load('any_survey_id')
+
+    expect(result).toEqual(mockSurveyResultModel())
+  })
+
   it('Should return SurveyResultModel on success', async () => {
     const { sut } = makeSut()
 
