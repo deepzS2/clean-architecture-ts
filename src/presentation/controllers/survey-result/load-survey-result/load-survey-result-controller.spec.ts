@@ -1,6 +1,8 @@
 import MockDate from 'mockdate'
 import { describe, expect, vi, it, beforeAll, afterAll } from 'vitest'
 
+import { InvalidParamError } from '@/presentation/errors'
+import { forbidden } from '@/presentation/helpers/http/http-helper'
 import { mockLoadSurveyById } from '@/presentation/mocks'
 
 import { LoadSurveyResultController } from './load-survey-result-controller'
@@ -40,5 +42,14 @@ describe('LoadSurveyResult Controller', () => {
     await sut.handle(mockRequest())
 
     expect(loadByIdSpy).toHaveBeenCalledWith('any_id')
+  })
+
+  it('Should return 403 if LoadSurveyById returns null', async () => {
+    const { sut, loadSurveyByIdStub } = makeSut()
+    vi.spyOn(loadSurveyByIdStub, 'loadById').mockResolvedValueOnce(null)
+
+    const httpResponse = await sut.handle(mockRequest())
+
+    expect(httpResponse).toEqual(forbidden(new InvalidParamError('surveyId')))
   })
 })
