@@ -82,5 +82,25 @@ describe('Survey Result Routes', () => {
     it('Should return 403 on save survey result if no access token is provided', async () => {
       await request(app).get('/api/surveys/any_id/results').expect(403)
     })
+
+    it('Should return 200 on load survey result with access token', async () => {
+      const accessToken = await makeAccessToken()
+
+      const result = await surveyCollection.insertOne({
+        question: 'Question',
+        answers: [{
+          answer: 'Answer 1',
+          image: 'http://image-name.com'
+        }, {
+          answer: 'Answer 2'
+        }],
+        date: new Date()
+      })
+
+      await request(app)
+        .get(`/api/surveys/${result.insertedId.toString()}/results`)
+        .set('x-access-token', accessToken)
+        .expect(200)
+    })
   })
 })
