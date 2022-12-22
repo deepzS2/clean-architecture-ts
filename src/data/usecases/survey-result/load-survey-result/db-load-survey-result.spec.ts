@@ -68,6 +68,17 @@ describe('DbLoadSurveyResult UseCase', () => {
     expect(result).toEqual(mockSurveyResultModel())
   })
 
+  it('Should return null if LoadSurveyByIdRepository returns null', async () => {
+    const { sut, loadSurveyByIdRepositoryStub, loadSurveyResultRepositoryStub } = makeSut()
+
+    vi.spyOn(loadSurveyResultRepositoryStub, 'loadBySurveyId').mockResolvedValueOnce(null)
+    vi.spyOn(loadSurveyByIdRepositoryStub, 'loadById').mockResolvedValueOnce(null)
+
+    const result = await sut.load('any_survey_id')
+
+    expect(result).toBeFalsy()
+  })
+
   it('Should return SurveyResultModel on success', async () => {
     const { sut } = makeSut()
 
