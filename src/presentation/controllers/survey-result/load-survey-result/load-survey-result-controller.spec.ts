@@ -2,7 +2,7 @@ import MockDate from 'mockdate'
 import { describe, expect, vi, it, beforeAll, afterAll } from 'vitest'
 
 import { InvalidParamError } from '@/presentation/errors'
-import { forbidden } from '@/presentation/helpers/http/http-helper'
+import { forbidden, serverError } from '@/presentation/helpers/http/http-helper'
 import { mockLoadSurveyById } from '@/presentation/mocks'
 
 import { LoadSurveyResultController } from './load-survey-result-controller'
@@ -51,5 +51,14 @@ describe('LoadSurveyResult Controller', () => {
     const httpResponse = await sut.handle(mockRequest())
 
     expect(httpResponse).toEqual(forbidden(new InvalidParamError('surveyId')))
+  })
+
+  it('Should return 500 if LoadSurveyById throws', async () => {
+    const { sut, loadSurveyByIdStub } = makeSut()
+    vi.spyOn(loadSurveyByIdStub, 'loadById').mockRejectedValueOnce(new Error())
+
+    const httpResponse = await sut.handle(mockRequest())
+
+    expect(httpResponse).toEqual(serverError(new Error()))
   })
 })
