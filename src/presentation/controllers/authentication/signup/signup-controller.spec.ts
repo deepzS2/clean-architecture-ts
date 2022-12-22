@@ -118,6 +118,6 @@ describe('SignUp Controller', () => {
 
     const httpResponse = await sut.handle(mockRequest())
 
-    expect(httpResponse).toEqual(ok({ accessToken: authenticationSpy.token }))
+    expect(httpResponse).toEqual(ok(authenticationSpy.authenticationModel))
   })
 })
