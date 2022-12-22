@@ -3,21 +3,23 @@ import { describe, expect, vi, it, beforeAll, afterAll } from 'vitest'
 
 import { InvalidParamError } from '@/presentation/errors'
 import { forbidden, serverError } from '@/presentation/helpers/http/http-helper'
-import { mockLoadSurveyById } from '@/presentation/mocks'
+import { mockLoadSurveyById, mockLoadSurveyResult } from '@/presentation/mocks'
 
 import { LoadSurveyResultController } from './load-survey-result-controller'
-import { HttpRequest, LoadSurveyById } from './load-survey-result-protocols'
+import { HttpRequest, LoadSurveyById, LoadSurveyResult } from './load-survey-result-protocols'
 
 interface SutTypes {
   sut: LoadSurveyResultController
   loadSurveyByIdStub: LoadSurveyById
+  loadSurveyResultStub: LoadSurveyResult
 }
 
 const makeSut = (): SutTypes => {
   const loadSurveyByIdStub = mockLoadSurveyById()
-  const sut = new LoadSurveyResultController(loadSurveyByIdStub)
+  const loadSurveyResultStub = mockLoadSurveyResult()
+  const sut = new LoadSurveyResultController(loadSurveyByIdStub, loadSurveyResultStub)
 
-  return { sut, loadSurveyByIdStub }
+  return { sut, loadSurveyByIdStub, loadSurveyResultStub }
 }
 
 const mockRequest = (): HttpRequest => ({
@@ -35,7 +37,7 @@ describe('LoadSurveyResult Controller', () => {
     MockDate.reset()
   })
 
-  it('Should call LoadSurveyById with correct values', async () => {
+  it('Should call LoadSurveyById with correct value', async () => {
     const { sut, loadSurveyByIdStub } = makeSut()
     const loadByIdSpy = vi.spyOn(loadSurveyByIdStub, 'loadById')
 
@@ -60,5 +62,14 @@ describe('LoadSurveyResult Controller', () => {
     const httpResponse = await sut.handle(mockRequest())
 
     expect(httpResponse).toEqual(serverError(new Error()))
+  })
+
+  it('Should call LoadSurveyResult with correct value', async () => {
+    const { sut, loadSurveyResultStub } = makeSut()
+    const loadSpy = vi.spyOn(loadSurveyResultStub, 'load')
+
+    await sut.handle(mockRequest())
+
+    expect(loadSpy).toHaveBeenCalledWith('any_id')
   })
 })
