@@ -1,22 +1,24 @@
 import MockDate from 'mockdate'
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 
-import { mockLoadSurveyResultRepository } from '@/data/mocks'
+import { mockLoadSurveyByIdRepository, mockLoadSurveyResultRepository } from '@/data/mocks'
 import { mockSurveyResultModel } from '@/domain/mocks'
 
 import { DbLoadSurveyResult } from './db-load-survey-result'
-import { LoadSurveyResultRepository } from './db-load-survey-result-protocols'
+import { LoadSurveyByIdRepository, LoadSurveyResultRepository } from './db-load-survey-result-protocols'
 
 interface SutTypes {
   sut: DbLoadSurveyResult
   loadSurveyResultRepositoryStub: LoadSurveyResultRepository
+  loadSurveyByIdRepositoryStub: LoadSurveyByIdRepository
 }
 
 const makeSut = (): SutTypes => {
   const loadSurveyResultRepositoryStub = mockLoadSurveyResultRepository()
-  const sut = new DbLoadSurveyResult(loadSurveyResultRepositoryStub)
+  const loadSurveyByIdRepositoryStub = mockLoadSurveyByIdRepository()
+  const sut = new DbLoadSurveyResult(loadSurveyResultRepositoryStub, loadSurveyByIdRepositoryStub)
 
-  return { sut, loadSurveyResultRepositoryStub }
+  return { sut, loadSurveyResultRepositoryStub, loadSurveyByIdRepositoryStub }
 }
 
 describe('DbLoadSurveyResult UseCase', () => {
@@ -43,6 +45,17 @@ describe('DbLoadSurveyResult UseCase', () => {
 
     const promise = sut.load('any_survey_id')
     await expect(promise).rejects.toThrow()
+  })
+
+  it('Should call LoadSurveyByIdRepository if LoadSurveyResultRepository returns null', async () => {
+    const { sut, loadSurveyResultRepositoryStub, loadSurveyByIdRepositoryStub } = makeSut()
+    const loadByIdSpy = vi.spyOn(loadSurveyByIdRepositoryStub, 'loadById')
+
+    vi.spyOn(loadSurveyResultRepositoryStub, 'loadBySurveyId').mockResolvedValueOnce(null)
+
+    await sut.load('any_survey_id')
+
+    expect(loadByIdSpy).toHaveBeenCalledWith('any_survey_id')
   })
 
   it('Should return SurveyResultModel on success', async () => {
