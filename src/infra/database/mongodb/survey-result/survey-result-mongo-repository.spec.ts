@@ -14,14 +14,14 @@ let accountCollection: Collection
 
 const makeSut = (): SurveyResultMongoRepository => new SurveyResultMongoRepository()
 
-const makeSurvey = async (): Promise<SurveyModel> => {
+const mockSurvey = async (): Promise<SurveyModel> => {
   const model = mockAddSurveyParams()
   const res = await surveyCollection.insertOne(model)
 
   return MongoHelper.map<SurveyModel>(res.insertedId, model)
 }
 
-const makeAccount = async (): Promise<AccountModel> => {
+const mockAccount = async (): Promise<AccountModel> => {
   const model = mockAddAccountParams()
 
   const res = await accountCollection.insertOne(model)
@@ -52,8 +52,8 @@ describe('SurveyMongoRepository', () => {
   describe('save()', () => {
     it('Should add a survey result if its new', async () => {
       const sut = makeSut()
-      const survey = await makeSurvey()
-      const account = await makeAccount()
+      const survey = await mockSurvey()
+      const account = await mockAccount()
 
       await sut.save({
         answer: survey.answers[0].answer,
@@ -72,8 +72,8 @@ describe('SurveyMongoRepository', () => {
 
     it('Should update survey result if its not new', async () => {
       const sut = makeSut()
-      const survey = await makeSurvey()
-      const account = await makeAccount()
+      const survey = await mockSurvey()
+      const account = await mockAccount()
 
       await surveyResultCollection.insertOne({
         answer: survey.answers[0].answer,
@@ -104,8 +104,8 @@ describe('SurveyMongoRepository', () => {
   describe('loadBySurveyId()', () => {
     it('Should load a survey result', async () => {
       const sut = makeSut()
-      const survey = await makeSurvey()
-      const account = await makeAccount()
+      const survey = await mockSurvey()
+      const account = await mockAccount()
 
       await surveyResultCollection.insertMany([{
         surveyId: new ObjectId(survey.id),
@@ -130,7 +130,7 @@ describe('SurveyMongoRepository', () => {
 
     it('Should return null if there is no survey result', async () => {
       const sut = makeSut()
-      const survey = await makeSurvey()
+      const survey = await mockSurvey()
 
       const surveyResult = await sut.loadBySurveyId(survey.id)
 

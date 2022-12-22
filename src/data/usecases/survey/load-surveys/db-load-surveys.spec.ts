@@ -2,6 +2,7 @@ import MockDate from 'mockdate'
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 
 import { LoadSurveysRepositorySpy } from '@/data/mocks'
+import { faker } from '@faker-js/faker'
 
 import { DbLoadSurveys } from './db-load-surveys'
 
@@ -26,25 +27,28 @@ describe('DbLoadSurveys', () => {
     MockDate.reset()
   })
 
-  it('Should call LoadSurveysRepository', async () => {
+  it('Should call LoadSurveysRepository with correct values', async () => {
     const { sut, loadSurveysRepositorySpy } = makeSut()
+    const accountId = faker.datatype.uuid()
 
-    await sut.load()
-    expect(loadSurveysRepositorySpy.callsCount).toBe(1)
+    await sut.load(accountId)
+    expect(loadSurveysRepositorySpy.accountId).toBe(accountId)
   })
 
   it('Should return a list of Surveys on success', async () => {
     const { sut, loadSurveysRepositorySpy } = makeSut()
+    const accountId = faker.datatype.uuid()
 
-    const surveys = await sut.load()
+    const surveys = await sut.load(accountId)
     expect(surveys).toEqual(loadSurveysRepositorySpy.surveyModels)
   })
 
   it('Should throw if LoadSurveysRepository throws', async () => {
     const { sut, loadSurveysRepositorySpy } = makeSut()
+    const accountId = faker.datatype.uuid()
     vi.spyOn(loadSurveysRepositorySpy, 'loadAll').mockRejectedValueOnce(new Error())
 
-    const promise = sut.load()
+    const promise = sut.load(accountId)
 
     await expect(promise).rejects.toThrow()
   })
