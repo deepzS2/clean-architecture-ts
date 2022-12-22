@@ -72,4 +72,13 @@ describe('LoadSurveyResult Controller', () => {
 
     expect(loadSpy).toHaveBeenCalledWith('any_id')
   })
+
+  it('Should return 500 if LoadSurveyResult throws', async () => {
+    const { sut, loadSurveyResultStub } = makeSut()
+    vi.spyOn(loadSurveyResultStub, 'load').mockRejectedValueOnce(new Error())
+
+    const httpResponse = await sut.handle(mockRequest())
+
+    expect(httpResponse).toEqual(serverError(new Error()))
+  })
 })
