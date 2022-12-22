@@ -3,33 +3,38 @@ import { AccountModel } from '@/domain/models/account'
 import { AddAccount, AddAccountParams } from '@/domain/usecases/account/add-account'
 import { Authentication, AuthenticationParams } from '@/domain/usecases/account/authentication'
 import { LoadAccountByToken } from '@/domain/usecases/account/load-account-by-token'
+import { faker } from '@faker-js/faker'
 
-export const mockAuthentication = (): Authentication => {
-  class AuthenticationStub implements Authentication {
-    async auth (authentication: AuthenticationParams): Promise<string> {
-      return await Promise.resolve('any_token')
-    }
+export class AddAccountSpy implements AddAccount {
+  accountModel: AccountModel | null = mockAccountModel()
+  addAccountParams: AddAccountParams
+
+  async add (account: AddAccountParams): Promise<AccountModel | null> {
+    this.addAccountParams = account
+
+    return await Promise.resolve(this.accountModel)
   }
-
-  return new AuthenticationStub()
 }
 
-export const mockAddAccount = (): AddAccount => {
-  class AddAccountStub implements AddAccount {
-    async add (account: AddAccountParams): Promise<AccountModel> {
-      return await Promise.resolve(mockAccountModel())
-    }
-  }
+export class AuthenticationSpy implements Authentication {
+  authenticationParams: AuthenticationParams
+  token: string | null = faker.datatype.uuid()
 
-  return new AddAccountStub()
+  async auth (authenticationParams: AuthenticationParams): Promise<string | null> {
+    this.authenticationParams = authenticationParams
+    return await Promise.resolve(this.token)
+  }
 }
 
-export const mockLoadAccountByToken = (): LoadAccountByToken => {
-  class LoadAccountByTokenStub implements LoadAccountByToken {
-    async load (token: string): Promise<AccountModel> {
-      return await Promise.resolve(mockAccountModel())
-    }
-  }
+export class LoadAccountByTokenSpy implements LoadAccountByToken {
+  accountModel: AccountModel | null = mockAccountModel()
+  accessToken: string
+  role?: string
 
-  return new LoadAccountByTokenStub()
+  async load (accessToken: string, role?: string): Promise<AccountModel | null> {
+    this.accessToken = accessToken
+    this.role = role
+
+    return await Promise.resolve(this.accountModel)
+  }
 }

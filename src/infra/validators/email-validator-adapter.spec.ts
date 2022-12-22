@@ -17,7 +17,7 @@ const makeSut = (): EmailValidatorAdapter => {
   return new EmailValidatorAdapter()
 }
 
-describe('EmailValidator Adapter', () => {
+describe('EmailValidatorAdapter', () => {
   it('Should return false if validator returns false', () => {
     const sut = makeSut()
     vitest.spyOn(validator, 'isEmail').mockReturnValueOnce(false)

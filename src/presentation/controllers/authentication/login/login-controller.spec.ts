@@ -2,26 +2,27 @@ import { describe, expect, it, vi } from 'vitest'
 
 import { MissingParamError } from '@/presentation/errors'
 import { badRequest, serverError, unauthorized, ok } from '@/presentation/helpers/http/http-helper'
-import { mockAuthentication, mockValidation } from '@/presentation/mocks'
+import { AuthenticationSpy, ValidationSpy } from '@/presentation/mocks'
+import { faker } from '@faker-js/faker'
 
 import { LoginController } from './login-controller'
-import { HttpRequest, Authentication, Validation } from './login-controller-protocols'
+import { HttpRequest } from './login-controller-protocols'
 
 interface SutTypes {
   sut: LoginController
-  authenticationStub: Authentication
-  validationStub: Validation
+  authenticationSpy: AuthenticationSpy
+  validationSpy: ValidationSpy
 }
 
 const makeSut = (): SutTypes => {
-  const validationStub = mockValidation()
-  const authenticationStub = mockAuthentication()
-  const sut = new LoginController(authenticationStub, validationStub)
+  const validationSpy = new ValidationSpy()
+  const authenticationSpy = new AuthenticationSpy()
+  const sut = new LoginController(authenticationSpy, validationSpy)
 
   return {
     sut,
-    authenticationStub,
-    validationStub
+    authenticationSpy,
+    validationSpy
   }
 }
 
@@ -34,58 +35,55 @@ const mockRequest = (): HttpRequest => ({
 
 describe('Login Controller', () => {
   it('Should call Authentication with correct values', async () => {
-    const { sut, authenticationStub } = makeSut()
-    const authSpy = vi.spyOn(authenticationStub, 'auth')
+    const { sut, authenticationSpy } = makeSut()
 
     const httpRequest = mockRequest()
-    const { email, password } = httpRequest.body
-
     await sut.handle(httpRequest)
-    expect(authSpy).toHaveBeenCalledWith({
-      email,
-      password
+
+    expect(authenticationSpy.authenticationParams).toEqual({
+      email: httpRequest.body.email,
+      password: httpRequest.body.password
     })
   })
 
   it('Should returns 401 if invalid credentials are provided', async () => {
-    const { sut, authenticationStub } = makeSut()
-    vi.spyOn(authenticationStub, 'auth').mockResolvedValueOnce(null)
+    const { sut, authenticationSpy } = makeSut()
+    authenticationSpy.token = null
 
     const httpResponse = await sut.handle(mockRequest())
     expect(httpResponse).toEqual(unauthorized())
   })
 
   it('Should returns 500 if Authentication throws', async () => {
-    const { sut, authenticationStub } = makeSut()
-    vi.spyOn(authenticationStub, 'auth').mockRejectedValueOnce(new Error())
+    const { sut, authenticationSpy } = makeSut()
+    vi.spyOn(authenticationSpy, 'auth').mockRejectedValueOnce(new Error())
 
     const httpResponse = await sut.handle(mockRequest())
     expect(httpResponse).toEqual(serverError(new Error()))
   })
 
   it('Should call Validation with correct values', async () => {
-    const { sut, validationStub } = makeSut()
-    const addSpy = vi.spyOn(validationStub, 'validate')
+    const { sut, validationSpy } = makeSut()
     const httpRequest = mockRequest()
 
     await sut.handle(httpRequest)
 
-    expect(addSpy).toHaveBeenCalledWith(httpRequest.body)
+    expect(validationSpy.input).toEqual(httpRequest.body)
   })
 
   it('Should return 400 if Validation returns an error', async () => {
-    const { sut, validationStub } = makeSut()
-    vi.spyOn(validationStub, 'validate').mockReturnValueOnce(new MissingParamError('any_field'))
+    const { sut, validationSpy } = makeSut()
+    validationSpy.error = new MissingParamError(faker.random.word())
 
     const httpResponse = await sut.handle(mockRequest())
 
-    expect(httpResponse).toEqual(badRequest(new MissingParamError('any_field')))
+    expect(httpResponse).toEqual(badRequest(validationSpy.error))
   })
 
   it('Should 200 if valid credentials are provided', async () => {
-    const { sut } = makeSut()
+    const { sut, authenticationSpy } = makeSut()
 
     const httpResponse = await sut.handle(mockRequest())
-    expect(httpResponse).toEqual(ok({ accessToken: 'any_token' }))
+    expect(httpResponse).toEqual(ok({ accessToken: authenticationSpy.token }))
   })
 })

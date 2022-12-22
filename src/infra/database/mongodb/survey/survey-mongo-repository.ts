@@ -9,10 +9,10 @@ import { AddSurveyParams } from '@/domain/usecases/survey/add-survey'
 import { MongoHelper } from '../helpers/mongo-helper'
 
 export class SurveyMongoRepository implements AddSurveyRepository, LoadSurveysRepository, LoadSurveyByIdRepository {
-  async add (surveyData: AddSurveyParams): Promise<void> {
+  async add (data: AddSurveyParams): Promise<void> {
     const surveyCollection = await MongoHelper.getCollection('surveys')
 
-    await surveyCollection.insertOne(surveyData)
+    await surveyCollection.insertOne(data)
   }
 
   async loadAll (): Promise<SurveyModel[]> {

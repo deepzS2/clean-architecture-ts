@@ -1,22 +1,20 @@
 import MockDate from 'mockdate'
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 
-import { mockLoadSurveysRepository } from '@/data/mocks'
-import { mockSurveyModels } from '@/domain/mocks'
+import { LoadSurveysRepositorySpy } from '@/data/mocks'
 
 import { DbLoadSurveys } from './db-load-surveys'
-import { LoadSurveysRepository } from './db-load-surveys-protocols'
 
 interface SutTypes {
   sut: DbLoadSurveys
-  loadSurveysRepositoryStub: LoadSurveysRepository
+  loadSurveysRepositorySpy: LoadSurveysRepositorySpy
 }
 
 const makeSut = (): SutTypes => {
-  const loadSurveysRepositoryStub = mockLoadSurveysRepository()
-  const sut = new DbLoadSurveys(loadSurveysRepositoryStub)
+  const loadSurveysRepositorySpy = new LoadSurveysRepositorySpy()
+  const sut = new DbLoadSurveys(loadSurveysRepositorySpy)
 
-  return { sut, loadSurveysRepositoryStub }
+  return { sut, loadSurveysRepositorySpy }
 }
 
 describe('DbLoadSurveys', () => {
@@ -29,23 +27,22 @@ describe('DbLoadSurveys', () => {
   })
 
   it('Should call LoadSurveysRepository', async () => {
-    const { sut, loadSurveysRepositoryStub } = makeSut()
-    const loadAllSpy = vi.spyOn(loadSurveysRepositoryStub, 'loadAll')
+    const { sut, loadSurveysRepositorySpy } = makeSut()
 
     await sut.load()
-    expect(loadAllSpy).toHaveBeenCalled()
+    expect(loadSurveysRepositorySpy.callsCount).toBe(1)
   })
 
   it('Should return a list of Surveys on success', async () => {
-    const { sut } = makeSut()
+    const { sut, loadSurveysRepositorySpy } = makeSut()
 
     const surveys = await sut.load()
-    expect(surveys).toEqual(mockSurveyModels())
+    expect(surveys).toEqual(loadSurveysRepositorySpy.surveyModels)
   })
 
   it('Should throw if LoadSurveysRepository throws', async () => {
-    const { sut, loadSurveysRepositoryStub } = makeSut()
-    vi.spyOn(loadSurveysRepositoryStub, 'loadAll').mockRejectedValueOnce(new Error())
+    const { sut, loadSurveysRepositorySpy } = makeSut()
+    vi.spyOn(loadSurveysRepositorySpy, 'loadAll').mockRejectedValueOnce(new Error())
 
     const promise = sut.load()
 

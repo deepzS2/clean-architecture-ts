@@ -22,10 +22,12 @@ export class MongoHelper {
     return this.client.db().collection<T>(name)
   }
 
-  static map<T = any>(insertedId: ObjectId, data: any): T {
+  static map<T = any>(id: ObjectId, data: any): T {
+    const { _id, ...rest } = data
+
     return {
-      id: insertedId.toString(),
-      ...data
+      id: id.toString(),
+      ...rest
     }
   }
 

@@ -1,89 +1,89 @@
 import { describe, expect, it, vi } from 'vitest'
 
-import { mockAddAccountRepository, mockHasher, mockLoadAccountByEmailRepository } from '@/data/mocks'
+import { HasherSpy, AddAccountRepositorySpy, LoadAccountByEmailRepositorySpy } from '@/data/mocks'
 import { mockAccountModel, mockAddAccountParams } from '@/domain/mocks'
 
 import { DbAddAccount } from './db-add-account'
-import { Hasher, AddAccountRepository, LoadAccountByEmailRepository } from './db-add-account-protocols'
 
 interface SutTypes {
   sut: DbAddAccount
-  hasherStub: Hasher
-  addAccountRepositoryStub: AddAccountRepository
-  loadAccountByEmailRepositoryStub: LoadAccountByEmailRepository
+  hasherSpy: HasherSpy
+  addAccountRepositorySpy: AddAccountRepositorySpy
+  loadAccountByEmailRepositorySpy: LoadAccountByEmailRepositorySpy
 }
 
 const makeSut = (): SutTypes => {
-  const hasherStub = mockHasher()
-  const addAccountRepositoryStub = mockAddAccountRepository()
-  const loadAccountByEmailRepositoryStub = mockLoadAccountByEmailRepository()
+  const loadAccountByEmailRepositorySpy = new LoadAccountByEmailRepositorySpy()
+  const hasherSpy = new HasherSpy()
+  const addAccountRepositorySpy = new AddAccountRepositorySpy()
 
-  vi.spyOn(loadAccountByEmailRepositoryStub, 'loadByEmail').mockResolvedValue(null)
+  loadAccountByEmailRepositorySpy.accountModel = null
 
-  const sut = new DbAddAccount(hasherStub, addAccountRepositoryStub, loadAccountByEmailRepositoryStub)
+  const sut = new DbAddAccount(hasherSpy, addAccountRepositorySpy, loadAccountByEmailRepositorySpy)
 
-  return { sut, hasherStub, addAccountRepositoryStub, loadAccountByEmailRepositoryStub }
+  return { sut, hasherSpy, addAccountRepositorySpy, loadAccountByEmailRepositorySpy }
 }
 
 describe('DbAddAccount Usecase', () => {
   it('Should call Hasher with correct password', async () => {
-    const { sut, hasherStub } = makeSut()
-    const encryptSpy = vi.spyOn(hasherStub, 'hash')
+    const { sut, hasherSpy } = makeSut()
+    const addAccountParams = mockAddAccountParams()
 
-    await sut.add(mockAddAccountParams())
-    expect(encryptSpy).toHaveBeenCalledWith('any_password')
+    await sut.add(addAccountParams)
+    expect(hasherSpy.plaintext).toBe(addAccountParams.password)
   })
 
   it('Should throws if Hasher throws', async () => {
-    const { sut, hasherStub } = makeSut()
-    vi.spyOn(hasherStub, 'hash').mockRejectedValueOnce(new Error())
+    const { sut, hasherSpy } = makeSut()
+    vi.spyOn(hasherSpy, 'hash').mockRejectedValueOnce(new Error())
 
     const promise = sut.add(mockAddAccountParams())
     await expect(promise).rejects.toThrow()
   })
 
   it('Should call AddAccountRepository with correct values', async () => {
-    const { sut, addAccountRepositoryStub } = makeSut()
-    const addSpy = vi.spyOn(addAccountRepositoryStub, 'add')
+    const { sut, addAccountRepositorySpy, hasherSpy } = makeSut()
+    const addAccountParams = mockAddAccountParams()
 
-    await sut.add(mockAddAccountParams())
-    expect(addSpy).toHaveBeenCalledWith({
-      name: 'any_name',
-      email: 'any_email@mail.com',
-      password: 'hashed_password'
+    await sut.add(addAccountParams)
+    expect(addAccountRepositorySpy.addAccountParams).toEqual({
+      name: addAccountParams.name,
+      email: addAccountParams.email,
+      password: hasherSpy.digest
     })
   })
 
   it('Should throws if AddAccountRepository throws', async () => {
-    const { sut, addAccountRepositoryStub } = makeSut()
-    vi.spyOn(addAccountRepositoryStub, 'add').mockRejectedValueOnce(new Error())
+    const { sut, addAccountRepositorySpy } = makeSut()
+    vi.spyOn(addAccountRepositorySpy, 'add').mockRejectedValueOnce(new Error())
 
     const promise = sut.add(mockAddAccountParams())
     await expect(promise).rejects.toThrow()
   })
 
   it('Should call LoadAccountByEmailRepository with correct email', async () => {
-    const { sut, loadAccountByEmailRepositoryStub } = makeSut()
-    const loadSpy = vi.spyOn(loadAccountByEmailRepositoryStub, 'loadByEmail')
+    const { sut, loadAccountByEmailRepositorySpy } = makeSut()
+    const addAccountParams = mockAddAccountParams()
 
-    await sut.add(mockAddAccountParams())
+    await sut.add(addAccountParams)
 
-    expect(loadSpy).toHaveBeenCalledWith('any_email@mail.com')
+    console.log(loadAccountByEmailRepositorySpy)
+
+    expect(loadAccountByEmailRepositorySpy.email).toBe(addAccountParams.email)
   })
 
   it('Should return null if LoadAccountByEmailRepository not return null', async () => {
-    const { sut, loadAccountByEmailRepositoryStub } = makeSut()
-    vi.spyOn(loadAccountByEmailRepositoryStub, 'loadByEmail').mockResolvedValueOnce(mockAccountModel())
+    const { sut, loadAccountByEmailRepositorySpy } = makeSut()
+    loadAccountByEmailRepositorySpy.accountModel = mockAccountModel()
 
     const account = await sut.add(mockAddAccountParams())
-
     expect(account).toBeFalsy()
   })
 
   it('Should return an account on success', async () => {
-    const { sut } = makeSut()
+    const { sut, addAccountRepositorySpy } = makeSut()
 
     const account = await sut.add(mockAddAccountParams())
-    expect(account).toEqual(mockAccountModel())
+    expect(account).toEqual(addAccountRepositorySpy.accountModel)
   })
 })

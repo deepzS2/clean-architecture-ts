@@ -1,6 +1,8 @@
 import { Collection } from 'mongodb'
 import { describe, beforeAll, afterAll, beforeEach, it, expect } from 'vitest'
 
+import { mockAddSurveyParams } from '@/domain/mocks'
+
 import { MongoHelper } from '../helpers/mongo-helper'
 import { SurveyMongoRepository } from './survey-mongo-repository'
 
@@ -8,7 +10,7 @@ let surveyCollection: Collection
 
 const makeSut = (): SurveyMongoRepository => new SurveyMongoRepository()
 
-describe('Survey Mongo Repository', () => {
+describe('SurveyMongoRepository', () => {
   beforeAll(async () => {
     await MongoHelper.connect(globalThis.__MONGO_URI__)
   })
@@ -26,48 +28,27 @@ describe('Survey Mongo Repository', () => {
     it('Should add a survey on success', async () => {
       const sut = makeSut()
 
-      await sut.add({
-        question: 'any_question',
-        answers: [{
-          answer: 'any_answer',
-          image: 'any_image'
-        }, {
-          answer: 'other_answer'
-        }],
-        date: new Date()
-      })
+      await sut.add(mockAddSurveyParams())
 
-      const survey = await surveyCollection.findOne({ question: 'any_question' })
+      const count = await surveyCollection.countDocuments()
 
-      expect(survey).toBeTruthy()
+      expect(count).toBe(1)
     })
   })
 
   describe('loadAll()', () => {
     it('Should load all surveys on success', async () => {
-      await surveyCollection.insertMany([{
-        question: 'any_question',
-        answers: [{
-          answer: 'any_answer',
-          image: 'any_image'
-        }],
-        date: new Date()
-      }, {
-        question: 'other_question',
-        answers: [{
-          answer: 'other_answer',
-          image: 'other_image'
-        }],
-        date: new Date()
-      }])
+      const addSurveyModels = [mockAddSurveyParams(), mockAddSurveyParams()]
+      await surveyCollection.insertMany(addSurveyModels)
 
       const sut = makeSut()
 
       const surveys = await sut.loadAll()
 
       expect(surveys.length).toBe(2)
-      expect(surveys[0].question).toBe('any_question')
-      expect(surveys[1].question).toBe('other_question')
+      expect(surveys[0].id).toBeTruthy()
+      expect(surveys[0].question).toBe(addSurveyModels[0].question)
+      expect(surveys[1].question).toBe(addSurveyModels[1].question)
     })
 
     it('Should load empty list', async () => {
@@ -81,14 +62,7 @@ describe('Survey Mongo Repository', () => {
 
   describe('loadById()', () => {
     it('Should load survey by id on success', async () => {
-      const { insertedId } = await surveyCollection.insertOne({
-        question: 'any_question',
-        answers: [{
-          answer: 'any_answer',
-          image: 'any_image'
-        }],
-        date: new Date()
-      })
+      const { insertedId } = await surveyCollection.insertOne(mockAddSurveyParams())
 
       const sut = makeSut()
 

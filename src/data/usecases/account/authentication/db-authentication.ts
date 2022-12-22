@@ -3,12 +3,12 @@ import { Authentication, AuthenticationParams, HashComparer, LoadAccountByEmailR
 export class DbAuthentication implements Authentication {
   constructor (private readonly _loadAccountByEmailRepository: LoadAccountByEmailRepository, private readonly _hashComparer: HashComparer, private readonly _tokenGenerator: Encrypter, private readonly _updateAccessTokenRepository: UpdateAccessTokenRepository) {}
 
-  async auth (authentication: AuthenticationParams): Promise<string | null> {
-    const account = await this._loadAccountByEmailRepository.loadByEmail(authentication.email)
+  async auth (authenticationParams: AuthenticationParams): Promise<string | null> {
+    const account = await this._loadAccountByEmailRepository.loadByEmail(authenticationParams.email)
 
     if (!account) return null
 
-    const isPasswordCorrect = await this._hashComparer.compare(authentication.password, account.password)
+    const isPasswordCorrect = await this._hashComparer.compare(authenticationParams.password, account.password)
 
     if (!isPasswordCorrect) return null
 

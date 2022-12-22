@@ -1,22 +1,21 @@
 import { describe, expect, it, vi } from 'vitest'
 
-import { mockLoadAccountByToken } from '@/presentation/mocks'
-
 import { AccessDeniedError } from '../errors'
 import { forbidden, ok, serverError } from '../helpers/http/http-helper'
+import { LoadAccountByTokenSpy } from '../mocks'
 import { AuthMiddleware } from './auth-middleware'
-import { HttpRequest, LoadAccountByToken } from './auth-middleware-protocols'
+import { HttpRequest } from './auth-middleware-protocols'
 
 interface SutTypes {
   sut: AuthMiddleware
-  loadAccountByTokenStub: LoadAccountByToken
+  loadAccountByTokenSpy: LoadAccountByTokenSpy
 }
 
 const makeSut = (role?: string): SutTypes => {
-  const loadAccountByTokenStub = mockLoadAccountByToken()
-  const sut = new AuthMiddleware(loadAccountByTokenStub, role)
+  const loadAccountByTokenSpy = new LoadAccountByTokenSpy()
+  const sut = new AuthMiddleware(loadAccountByTokenSpy, role)
 
-  return { sut, loadAccountByTokenStub }
+  return { sut, loadAccountByTokenSpy }
 }
 
 const mockRequest = (): HttpRequest => ({
@@ -38,17 +37,18 @@ describe('Auth Middleware', () => {
 
   it('Should call LoadAccountByToken with correct token', async () => {
     const role = 'any_role'
-    const { sut, loadAccountByTokenStub } = makeSut(role)
-    const loadSpy = vi.spyOn(loadAccountByTokenStub, 'load')
+    const { sut, loadAccountByTokenSpy } = makeSut(role)
 
-    await sut.handle(mockRequest())
+    const httpRequest = mockRequest()
+    await sut.handle(httpRequest)
 
-    expect(loadSpy).toHaveBeenCalledWith('any_token', role)
+    expect(loadAccountByTokenSpy.accessToken).toBe(httpRequest.headers['x-access-token'])
+    expect(loadAccountByTokenSpy.role).toBe(role)
   })
 
   it('Should return 403 if LoadAccountByToken returns null', async () => {
-    const { sut, loadAccountByTokenStub } = makeSut()
-    vi.spyOn(loadAccountByTokenStub, 'load').mockResolvedValueOnce(null)
+    const { sut, loadAccountByTokenSpy } = makeSut()
+    loadAccountByTokenSpy.accountModel = null
 
     const httpResponse = await sut.handle(mockRequest())
 
@@ -56,8 +56,8 @@ describe('Auth Middleware', () => {
   })
 
   it('Should return 500 if LoadAccountByToken throws', async () => {
-    const { sut, loadAccountByTokenStub } = makeSut()
-    vi.spyOn(loadAccountByTokenStub, 'load').mockRejectedValueOnce(new Error())
+    const { sut, loadAccountByTokenSpy } = makeSut()
+    vi.spyOn(loadAccountByTokenSpy, 'load').mockRejectedValueOnce(new Error())
 
     const httpResponse = await sut.handle(mockRequest())
 
@@ -65,10 +65,12 @@ describe('Auth Middleware', () => {
   })
 
   it('Should return 200 if LoadAccountByToken returns an account', async () => {
-    const { sut } = makeSut()
+    const { sut, loadAccountByTokenSpy } = makeSut()
 
     const httpResponse = await sut.handle(mockRequest())
 
-    expect(httpResponse).toEqual(ok({ accountId: 'any_id' }))
+    expect(httpResponse).toEqual(ok({
+      accountId: loadAccountByTokenSpy.accountModel?.id
+    }))
   })
 })

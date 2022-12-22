@@ -3,51 +3,36 @@ type QueryBuilderObject = Record<string, any>
 export class QueryBuilder {
   private readonly _query: QueryBuilderObject[] = []
 
-  match (data: QueryBuilderObject): QueryBuilder {
+  private addStep (step: string, data: QueryBuilderObject): QueryBuilder {
     this._query.push({
-      $match: data
+      [step]: data
     })
 
     return this
+  }
+
+  match (data: QueryBuilderObject): QueryBuilder {
+    return this.addStep('$match', data)
   }
 
   group (data: QueryBuilderObject): QueryBuilder {
-    this._query.push({
-      $group: data
-    })
-
-    return this
+    return this.addStep('$group', data)
   }
 
   sort (data: object): QueryBuilder {
-    this._query.push({
-      $sort: data
-    })
-    return this
+    return this.addStep('$sort', data)
   }
 
   unwind (data: QueryBuilderObject): QueryBuilder {
-    this._query.push({
-      $unwind: data
-    })
-
-    return this
+    return this.addStep('$unwind', data)
   }
 
   lookup (data: QueryBuilderObject): QueryBuilder {
-    this._query.push({
-      $lookup: data
-    })
-
-    return this
+    return this.addStep('$lookup', data)
   }
 
   project (data: QueryBuilderObject): QueryBuilder {
-    this._query.push({
-      $project: data
-    })
-
-    return this
+    return this.addStep('$project', data)
   }
 
   build (): QueryBuilderObject[] {

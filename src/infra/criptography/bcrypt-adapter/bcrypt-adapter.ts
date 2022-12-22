@@ -6,14 +6,14 @@ import { Hasher } from '@/data/protocols/criptography/hasher'
 export class BcryptAdapter implements Hasher, HashComparer {
   constructor (private readonly _salt: number) {}
 
-  async hash (value: string): Promise<string> {
-    const hashedValue = await bcrypt.hash(value, this._salt)
+  async hash (plaintext: string): Promise<string> {
+    const hashedValue = await bcrypt.hash(plaintext, this._salt)
 
     return hashedValue
   }
 
-  async compare (value: string, hash: string): Promise<boolean> {
-    const isEquals = await bcrypt.compare(value, hash)
+  async compare (plaintext: string, digest: string): Promise<boolean> {
+    const isEquals = await bcrypt.compare(plaintext, digest)
 
     return isEquals
   }

@@ -2,32 +2,32 @@ import MockDate from 'mockdate'
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 
 import { badRequest, noContent, serverError } from '@/presentation/helpers/http/http-helper'
-import { mockValidation } from '@/presentation/mocks'
-import { mockAddSurvey } from '@/presentation/mocks'
+import { AddSurveySpy, ValidationSpy } from '@/presentation/mocks'
+import { faker } from '@faker-js/faker'
 
 import { AddSurveyController } from './add-survey-controller'
-import { AddSurvey, Validation, HttpRequest } from './add-survey-protocols'
+import { HttpRequest } from './add-survey-protocols'
 
 interface SutTypes {
   sut: AddSurveyController
-  validationStub: Validation
-  addSurveyStub: AddSurvey
+  validationSpy: ValidationSpy
+  addSurveySpy: AddSurveySpy
 }
 
 const makeSut = (): SutTypes => {
-  const validationStub = mockValidation()
-  const addSurveyStub = mockAddSurvey()
-  const sut = new AddSurveyController(validationStub, addSurveyStub)
+  const validationSpy = new ValidationSpy()
+  const addSurveySpy = new AddSurveySpy()
+  const sut = new AddSurveyController(validationSpy, addSurveySpy)
 
-  return { sut, validationStub, addSurveyStub }
+  return { sut, validationSpy, addSurveySpy }
 }
 
 const mockRequest = (): HttpRequest => ({
   body: {
-    question: 'any_question',
+    question: faker.random.words(),
     answers: [{
-      image: 'any_image',
-      answer: 'any_answer'
+      image: faker.image.imageUrl(),
+      answer: faker.random.word()
     }],
     date: new Date()
   }
@@ -43,41 +43,39 @@ describe('AddSurvey Controller', () => {
   })
 
   it('Should call Validation with correct values', async () => {
-    const { sut, validationStub } = makeSut()
-    const validateSpy = vi.spyOn(validationStub, 'validate')
+    const { sut, validationSpy } = makeSut()
 
     const httpRequest = mockRequest()
 
     await sut.handle(httpRequest)
 
-    expect(validateSpy)
+    expect(validationSpy.input).toEqual(httpRequest.body)
   })
 
   it('Should return 400 if Validation fails', async () => {
-    const { sut, validationStub } = makeSut()
-    vi.spyOn(validationStub, 'validate').mockReturnValueOnce(new Error())
+    const { sut, validationSpy } = makeSut()
+    validationSpy.error = new Error()
 
     const httpRequest = mockRequest()
 
     const httpResponse = await sut.handle(httpRequest)
 
-    expect(httpResponse).toEqual(badRequest(new Error()))
+    expect(httpResponse).toEqual(badRequest(validationSpy.error))
   })
 
   it('Should call AddSurveyUseCase with correct values', async () => {
-    const { sut, addSurveyStub } = makeSut()
-    const addSpy = vi.spyOn(addSurveyStub, 'add')
+    const { sut, addSurveySpy } = makeSut()
 
     const httpRequest = mockRequest()
 
     await sut.handle(httpRequest)
 
-    expect(addSpy).toHaveBeenCalledWith(httpRequest.body)
+    expect(addSurveySpy.addSurveyParams).toEqual(httpRequest.body)
   })
 
   it('Should return 500 if AddSurveyUseCase throws', async () => {
-    const { sut, addSurveyStub } = makeSut()
-    vi.spyOn(addSurveyStub, 'add').mockRejectedValueOnce(new Error())
+    const { sut, addSurveySpy } = makeSut()
+    vi.spyOn(addSurveySpy, 'add').mockRejectedValueOnce(new Error())
 
     const httpResponse = await sut.handle(mockRequest())
 
