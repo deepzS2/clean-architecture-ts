@@ -5,6 +5,7 @@ export const surveyPath = {
     }],
     tags: ['Survey'],
     summary: 'API to list all surveys',
+    description: 'This route should only be executed by **authenticated users**',
     responses: {
       200: {
         description: 'Success',
@@ -33,6 +34,7 @@ export const surveyPath = {
     }],
     tags: ['Survey'],
     summary: 'API to create a survey',
+    description: 'This route should only be executed by **authenticated users**',
     requestBody: {
       description: 'Success',
       content: {
