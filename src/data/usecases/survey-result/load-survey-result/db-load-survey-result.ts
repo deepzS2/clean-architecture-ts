@@ -1,9 +1,15 @@
-import { LoadSurveyResult, LoadSurveyResultRepository, SurveyResultModel } from './db-load-survey-result-protocols'
+import { LoadSurveyByIdRepository, LoadSurveyResult, LoadSurveyResultRepository, SurveyResultModel } from './db-load-survey-result-protocols'
 
 export class DbLoadSurveyResult implements LoadSurveyResult {
-  constructor (private readonly _loadSurveyResultRepository: LoadSurveyResultRepository) {}
+  constructor (private readonly _loadSurveyResultRepository: LoadSurveyResultRepository, private readonly _loadSurveyByIdRepository: LoadSurveyByIdRepository) {}
 
   async load (surveyId: string): Promise<SurveyResultModel | null> {
-    return await this._loadSurveyResultRepository.loadBySurveyId(surveyId)
+    const surveyResult = await this._loadSurveyResultRepository.loadBySurveyId(surveyId)
+
+    if (!surveyResult) {
+      await this._loadSurveyByIdRepository.loadById(surveyId)
+    }
+
+    return surveyResult
   }
 }
