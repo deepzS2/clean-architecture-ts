@@ -12,7 +12,7 @@ export default gql`
   type SurveyResult {
     surveyId: String!
     question: String!
-    date: [Answer!]!
+    answers: [Answer!]!
     date: DateTime!
   }
 
