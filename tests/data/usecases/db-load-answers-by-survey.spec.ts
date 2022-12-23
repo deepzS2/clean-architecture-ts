@@ -1,57 +1,57 @@
-import MockDate from 'mockdate'
-import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { DbLoadSurveyById } from '@/data/usecases'
+import { DbLoadAnswersBySurvey } from '@/data/usecases'
 import { faker } from '@faker-js/faker'
 
 import { LoadSurveyByIdRepositorySpy } from '../mocks'
 
 interface SutTypes {
-  sut: DbLoadSurveyById
+  sut: DbLoadAnswersBySurvey
   loadSurveyByIdRepositorySpy: LoadSurveyByIdRepositorySpy
 }
 
 const makeSut = (): SutTypes => {
   const loadSurveyByIdRepositorySpy = new LoadSurveyByIdRepositorySpy()
-  const sut = new DbLoadSurveyById(loadSurveyByIdRepositorySpy)
+  const sut = new DbLoadAnswersBySurvey(loadSurveyByIdRepositorySpy)
 
   return { sut, loadSurveyByIdRepositorySpy }
 }
 
 let surveyId: string
 
-describe('DbLoadSurveyById', () => {
-  beforeAll(() => {
-    MockDate.set(new Date())
-  })
-
-  afterAll(() => {
-    MockDate.reset()
-  })
-
+describe('DbLoadAnswersBySurvey', () => {
   beforeEach(() => {
     surveyId = faker.datatype.uuid()
   })
 
   it('Should call LoadSurveyByIdRepository with correct value', async () => {
     const { sut, loadSurveyByIdRepositorySpy } = makeSut()
-    await sut.loadById(surveyId)
+    await sut.loadAnswers(surveyId)
 
     expect(loadSurveyByIdRepositorySpy.id).toBe(surveyId)
   })
 
-  it('Should return a Survey on success', async () => {
+  it('Should return empty array if LoadSurveyByIdRepository returns null', async () => {
     const { sut, loadSurveyByIdRepositorySpy } = makeSut()
-    const survey = await sut.loadById(surveyId)
+    loadSurveyByIdRepositorySpy.result = null
 
-    expect(survey).toEqual(loadSurveyByIdRepositorySpy.result)
+    const answers = await sut.loadAnswers(surveyId)
+
+    expect(answers).toEqual([])
+  })
+
+  it('Should return answers on success', async () => {
+    const { sut, loadSurveyByIdRepositorySpy } = makeSut()
+    const answers = await sut.loadAnswers(surveyId)
+
+    expect(answers).toEqual(loadSurveyByIdRepositorySpy.result?.answers.map(a => a.answer))
   })
 
   it('Should throw if LoadSurveyByIdRepository throws', async () => {
     const { sut, loadSurveyByIdRepositorySpy } = makeSut()
     vi.spyOn(loadSurveyByIdRepositorySpy, 'loadById').mockRejectedValueOnce(new Error())
 
-    const promise = sut.loadById('any_id')
+    const promise = sut.loadAnswers('any_id')
 
     await expect(promise).rejects.toThrow()
   })
