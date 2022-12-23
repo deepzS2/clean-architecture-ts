@@ -1,9 +1,8 @@
-import { DbAddAccount } from '@/data/usecases/account/add-account/db-add-account'
-import { AddAccount } from '@/domain/usecases/account/add-account'
-import { BcryptAdapter } from '@/infra/criptography/bcrypt-adapter/bcrypt-adapter'
-import { AccountMongoRepository } from '@/infra/database/mongodb/account/account-mongo-repository'
+import { DbAddAccount } from '@/data/usecases'
+import { BcryptAdapter } from '@/infra/criptography'
+import { AccountMongoRepository } from '@/infra/database/mongodb/account-mongo-repository'
 
-export const makeDbAddAccount = (): AddAccount => {
+export const makeDbAddAccount = (): DbAddAccount => {
   const hasher = new BcryptAdapter(12)
   const accountMongoRepository = new AccountMongoRepository()
 

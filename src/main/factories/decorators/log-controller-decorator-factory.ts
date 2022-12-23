@@ -1,4 +1,4 @@
-import { LogMongoRepository } from '@/infra/database/mongodb/log/log-mongo-repository'
+import { LogMongoRepository } from '@/infra/database'
 import { LogControllerDecorator } from '@/main/decorators/log-controller-decorator'
 import { Controller } from '@/presentation/protocols'
 
