@@ -17,16 +17,16 @@ export class LoginController implements Controller {
 
       const { email, password } = request
 
-      const authenticationModel = await this._authentication.auth({
+      const data = await this._authentication.auth({
         email,
         password
       })
 
-      if (!authenticationModel) {
+      if (!data) {
         return unauthorized()
       }
 
-      return ok(authenticationModel)
+      return ok(data)
     } catch (error) {
       return serverError(error)
     }
