@@ -15,13 +15,13 @@ export class AddSurveyRepositorySpy implements AddSurveyRepository {
   }
 }
 export class LoadSurveyByIdRepositorySpy implements LoadSurveyByIdRepository {
-  surveyModel: SurveyModel | null = mockSurveyModel()
+  result: LoadSurveyByIdRepository.Result = mockSurveyModel()
   id: string
 
-  async loadById (id: string): Promise<SurveyModel | null> {
+  async loadById (id: string): Promise<LoadSurveyByIdRepository.Result> {
     this.id = id
 
-    return await Promise.resolve(this.surveyModel)
+    return await Promise.resolve(this.result)
   }
 }
 
