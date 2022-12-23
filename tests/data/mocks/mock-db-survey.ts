@@ -1,6 +1,4 @@
-import { AddSurveyRepository } from '@/data/protocols/db/survey/add-survey-repository'
-import { LoadSurveyByIdRepository } from '@/data/protocols/db/survey/load-survey-by-id-repository'
-import { LoadSurveysRepository } from '@/data/protocols/db/survey/load-surveys-repository'
+import { AddSurveyRepository, LoadSurveyByIdRepository, LoadSurveysRepository, CheckSurveyByIdRepository } from '@/data/protocols'
 import { SurveyModel } from '@/domain/models/survey'
 
 import { mockSurveyModel, mockSurveyModels } from '../../domain/mocks'
@@ -19,6 +17,17 @@ export class LoadSurveyByIdRepositorySpy implements LoadSurveyByIdRepository {
   id: string
 
   async loadById (id: string): Promise<LoadSurveyByIdRepository.Result> {
+    this.id = id
+
+    return await Promise.resolve(this.result)
+  }
+}
+
+export class CheckSurveyByIdRepositorySpy implements CheckSurveyByIdRepository {
+  result: CheckSurveyByIdRepository.Result = true
+  id: string
+
+  async checkById (id: string): Promise<CheckSurveyByIdRepository.Result> {
     this.id = id
 
     return await Promise.resolve(this.result)
