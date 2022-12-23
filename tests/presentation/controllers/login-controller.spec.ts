@@ -3,7 +3,6 @@ import { describe, expect, it, vi } from 'vitest'
 import { LoginController } from '@/presentation/controllers'
 import { MissingParamError } from '@/presentation/errors'
 import { badRequest, serverError, unauthorized, ok } from '@/presentation/helpers'
-import { HttpRequest } from '@/presentation/protocols'
 import { faker } from '@faker-js/faker'
 
 import { AuthenticationSpy, ValidationSpy } from '../../presentation/mocks'
@@ -26,23 +25,21 @@ const makeSut = (): SutTypes => {
   }
 }
 
-const mockRequest = (): HttpRequest => ({
-  body: {
-    email: 'any_email@mail.com',
-    password: 'any_password'
-  }
+const mockRequest = (): LoginController.Request => ({
+  email: faker.internet.email(),
+  password: faker.internet.password()
 })
 
 describe('Login Controller', () => {
   it('Should call Authentication with correct values', async () => {
     const { sut, authenticationSpy } = makeSut()
 
-    const httpRequest = mockRequest()
-    await sut.handle(httpRequest)
+    const request = mockRequest()
+    await sut.handle(request)
 
     expect(authenticationSpy.authenticationParams).toEqual({
-      email: httpRequest.body.email,
-      password: httpRequest.body.password
+      email: request.email,
+      password: request.password
     })
   })
 
@@ -64,11 +61,11 @@ describe('Login Controller', () => {
 
   it('Should call Validation with correct values', async () => {
     const { sut, validationSpy } = makeSut()
-    const httpRequest = mockRequest()
+    const request = mockRequest()
 
-    await sut.handle(httpRequest)
+    await sut.handle(request)
 
-    expect(validationSpy.input).toEqual(httpRequest.body)
+    expect(validationSpy.input).toEqual(request)
   })
 
   it('Should return 400 if Validation returns an error', async () => {

@@ -3,7 +3,6 @@ import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 
 import { AddSurveyController } from '@/presentation/controllers'
 import { badRequest, noContent, serverError } from '@/presentation/helpers'
-import { HttpRequest } from '@/presentation/protocols'
 import { faker } from '@faker-js/faker'
 
 import { AddSurveySpy, ValidationSpy } from '../../presentation/mocks'
@@ -22,15 +21,12 @@ const makeSut = (): SutTypes => {
   return { sut, validationSpy, addSurveySpy }
 }
 
-const mockRequest = (): HttpRequest => ({
-  body: {
-    question: faker.random.words(),
-    answers: [{
-      image: faker.image.imageUrl(),
-      answer: faker.random.word()
-    }],
-    date: new Date()
-  }
+const mockRequest = (): AddSurveyController.Request => ({
+  question: faker.random.words(),
+  answers: [{
+    image: faker.image.imageUrl(),
+    answer: faker.random.word()
+  }]
 })
 
 describe('AddSurvey Controller', () => {
@@ -45,20 +41,20 @@ describe('AddSurvey Controller', () => {
   it('Should call Validation with correct values', async () => {
     const { sut, validationSpy } = makeSut()
 
-    const httpRequest = mockRequest()
+    const request = mockRequest()
 
-    await sut.handle(httpRequest)
+    await sut.handle(request)
 
-    expect(validationSpy.input).toEqual(httpRequest.body)
+    expect(validationSpy.input).toEqual(request)
   })
 
   it('Should return 400 if Validation fails', async () => {
     const { sut, validationSpy } = makeSut()
     validationSpy.error = new Error()
 
-    const httpRequest = mockRequest()
+    const request = mockRequest()
 
-    const httpResponse = await sut.handle(httpRequest)
+    const httpResponse = await sut.handle(request)
 
     expect(httpResponse).toEqual(badRequest(validationSpy.error))
   })
@@ -66,11 +62,11 @@ describe('AddSurvey Controller', () => {
   it('Should call AddSurveyUseCase with correct values', async () => {
     const { sut, addSurveySpy } = makeSut()
 
-    const httpRequest = mockRequest()
+    const request = mockRequest()
 
-    await sut.handle(httpRequest)
+    await sut.handle(request)
 
-    expect(addSurveySpy.addSurveyParams).toEqual(httpRequest.body)
+    expect(addSurveySpy.addSurveyParams).toEqual(expect.objectContaining(request))
   })
 
   it('Should return 500 if AddSurveyUseCase throws', async () => {

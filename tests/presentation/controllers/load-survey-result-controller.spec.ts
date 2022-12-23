@@ -4,7 +4,6 @@ import { describe, expect, vi, it, beforeAll, afterAll } from 'vitest'
 import { LoadSurveyResultController } from '@/presentation/controllers'
 import { InvalidParamError } from '@/presentation/errors'
 import { forbidden, ok, serverError } from '@/presentation/helpers'
-import { HttpRequest } from '@/presentation/protocols'
 import { faker } from '@faker-js/faker'
 
 import { LoadSurveyByIdSpy, LoadSurveyResultSpy } from '../../presentation/mocks'
@@ -23,11 +22,9 @@ const makeSut = (): SutTypes => {
   return { sut, loadSurveyByIdSpy, loadSurveyResultSpy }
 }
 
-const mockRequest = (): HttpRequest => ({
+const mockRequest = (): LoadSurveyResultController.Request => ({
   accountId: faker.datatype.uuid(),
-  params: {
-    surveyId: faker.datatype.uuid()
-  }
+  surveyId: faker.datatype.uuid()
 })
 
 describe('LoadSurveyResult Controller', () => {
@@ -42,10 +39,10 @@ describe('LoadSurveyResult Controller', () => {
   it('Should call LoadSurveyById with correct value', async () => {
     const { sut, loadSurveyByIdSpy } = makeSut()
 
-    const httpRequest = mockRequest()
-    await sut.handle(httpRequest)
+    const request = mockRequest()
+    await sut.handle(request)
 
-    expect(loadSurveyByIdSpy.id).toBe(httpRequest.params.surveyId)
+    expect(loadSurveyByIdSpy.id).toBe(request.surveyId)
   })
 
   it('Should return 403 if LoadSurveyById returns null', async () => {
@@ -69,11 +66,11 @@ describe('LoadSurveyResult Controller', () => {
   it('Should call LoadSurveyResult with correct values', async () => {
     const { sut, loadSurveyResultSpy } = makeSut()
 
-    const httpRequest = mockRequest()
-    await sut.handle(httpRequest)
+    const request = mockRequest()
+    await sut.handle(request)
 
-    expect(loadSurveyResultSpy.surveyId).toBe(httpRequest.params.surveyId)
-    expect(loadSurveyResultSpy.accountId).toBe(httpRequest.accountId)
+    expect(loadSurveyResultSpy.surveyId).toBe(request.surveyId)
+    expect(loadSurveyResultSpy.accountId).toBe(request.accountId)
   })
 
   it('Should return 500 if LoadSurveyResult throws', async () => {

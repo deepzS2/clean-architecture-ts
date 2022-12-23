@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { AccessDeniedError } from '@/presentation/errors'
 import { forbidden, ok, serverError } from '@/presentation/helpers'
 import { AuthMiddleware } from '@/presentation/middlewares'
-import { HttpRequest } from '@/presentation/protocols'
+import { faker } from '@faker-js/faker'
 
 import { LoadAccountByTokenSpy } from '../mocks'
 
@@ -19,10 +19,8 @@ const makeSut = (role?: string): SutTypes => {
   return { sut, loadAccountByTokenSpy }
 }
 
-const mockRequest = (): HttpRequest => ({
-  headers: {
-    'x-access-token': 'any_token'
-  }
+const mockRequest = (): AuthMiddleware.Request => ({
+  accessToken: faker.datatype.uuid()
 })
 
 describe('Auth Middleware', () => {
@@ -30,7 +28,6 @@ describe('Auth Middleware', () => {
     const { sut } = makeSut()
 
     const httpResponse = await sut.handle({
-      headers: {}
     })
 
     expect(httpResponse).toEqual(forbidden(new AccessDeniedError()))
@@ -40,10 +37,10 @@ describe('Auth Middleware', () => {
     const role = 'any_role'
     const { sut, loadAccountByTokenSpy } = makeSut(role)
 
-    const httpRequest = mockRequest()
-    await sut.handle(httpRequest)
+    const request = mockRequest()
+    await sut.handle(request)
 
-    expect(loadAccountByTokenSpy.accessToken).toBe(httpRequest.headers['x-access-token'])
+    expect(loadAccountByTokenSpy.accessToken).toBe(request.accessToken)
     expect(loadAccountByTokenSpy.role).toBe(role)
   })
 
