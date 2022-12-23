@@ -79,5 +79,23 @@ describe('Login GraphQL', () => {
       expect(result.body.data.signUp.accessToken).toBeTruthy()
       expect(result.body.data.signUp.name).toBe('Alan')
     })
+
+    it('Should return EmailInUseError on invalid data', async () => {
+      const passwordHashed = bcrypt.hashSync('123456', 12)
+
+      await accountCollection.insertOne({
+        name: 'Alan',
+        email: 'alanr.developer@hotmail.com',
+        password: passwordHashed
+      })
+
+      const query = signUpMutation('Alan', 'alanr.developer@hotmail.com', '123456', '123456')
+
+      const result = await request(app).post('/graphql').send({ query })
+
+      expect(result.status).toBe(403)
+      expect(result.body.data).toBeFalsy()
+      expect(result.body.errors[0].message).toBe('The received email is already in use')
+    })
   })
 })
