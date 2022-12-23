@@ -1,8 +1,9 @@
 import { describe, expect, it, vi } from 'vitest'
 
 import { DbAddAccount } from '@/data/usecases'
+import { faker } from '@faker-js/faker'
 
-import { mockAccountModel, mockAddAccountParams } from '../../domain/mocks'
+import { mockAddAccountParams } from '../../domain/mocks'
 import { HasherSpy, AddAccountRepositorySpy, LoadAccountByEmailRepositorySpy } from '../mocks'
 
 interface SutTypes {
@@ -17,7 +18,7 @@ const makeSut = (): SutTypes => {
   const hasherSpy = new HasherSpy()
   const addAccountRepositorySpy = new AddAccountRepositorySpy()
 
-  loadAccountByEmailRepositorySpy.accountModel = null
+  loadAccountByEmailRepositorySpy.result = null
 
   const sut = new DbAddAccount(hasherSpy, addAccountRepositorySpy, loadAccountByEmailRepositorySpy)
 
@@ -54,6 +55,14 @@ describe('DbAddAccount Usecase', () => {
     })
   })
 
+  it('Should return false if AddAccountRepository returns false', async () => {
+    const { sut, addAccountRepositorySpy } = makeSut()
+    addAccountRepositorySpy.hasCreatedAccount = false
+
+    const hasCreatedAccount = await sut.add(mockAddAccountParams())
+    expect(hasCreatedAccount).toBeFalsy()
+  })
+
   it('Should throws if AddAccountRepository throws', async () => {
     const { sut, addAccountRepositorySpy } = makeSut()
     vi.spyOn(addAccountRepositorySpy, 'add').mockRejectedValueOnce(new Error())
@@ -73,7 +82,11 @@ describe('DbAddAccount Usecase', () => {
 
   it('Should return false if LoadAccountByEmailRepository returns an account', async () => {
     const { sut, loadAccountByEmailRepositorySpy } = makeSut()
-    loadAccountByEmailRepositorySpy.accountModel = mockAccountModel()
+    loadAccountByEmailRepositorySpy.result = {
+      id: faker.datatype.uuid(),
+      name: faker.name.fullName(),
+      password: faker.internet.password()
+    }
 
     const hasCreatedAccount = await sut.add(mockAddAccountParams())
     expect(hasCreatedAccount).toBeFalsy()

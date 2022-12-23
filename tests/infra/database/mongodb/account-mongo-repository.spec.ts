@@ -28,13 +28,9 @@ describe('AccountMongoRepository', () => {
       const sut = makeSut()
       const addAccountParams = mockAddAccountParams()
 
-      const account = await sut.add(addAccountParams)
+      const hasCreatedAccount = await sut.add(addAccountParams)
 
-      expect(account).toBeTruthy()
-      expect(account?.id).toBeTruthy()
-      expect(account.name).toBe(addAccountParams.name)
-      expect(account.email).toBe(addAccountParams.email)
-      expect(account.password).toBe(addAccountParams.password)
+      expect(hasCreatedAccount).toBeTruthy()
     })
   })
 
@@ -49,7 +45,6 @@ describe('AccountMongoRepository', () => {
       expect(account).toBeTruthy()
       expect(account?.id).toBeTruthy()
       expect(account?.name).toBe(addAccountParams.name)
-      expect(account?.email).toBe(addAccountParams.email)
       expect(account?.password).toBe(addAccountParams.password)
     })
 
