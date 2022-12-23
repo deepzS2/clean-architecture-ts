@@ -22,7 +22,7 @@ export class AccountMongoRepository implements AddAccountRepository, LoadAccount
     return MongoHelper.map<AccountModel>(account._id, account)
   }
 
-  async loadByToken (token: string, role?: string | undefined): Promise<AccountModel | null> {
+  async loadByToken (token: string, role?: string | undefined): Promise<LoadAccountByTokenRepository.Result> {
     const accountCollection = await MongoHelper.getCollection('accounts')
     const account = await accountCollection.findOne({
       accessToken: token,
@@ -31,6 +31,10 @@ export class AccountMongoRepository implements AddAccountRepository, LoadAccount
       }, {
         role: 'admin'
       }]
+    }, {
+      projection: {
+        _id: 1
+      }
     })
 
     if (!account) return null
