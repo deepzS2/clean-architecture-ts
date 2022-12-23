@@ -46,6 +46,7 @@ describe('DbAddAccount Usecase', () => {
     const addAccountParams = mockAddAccountParams()
 
     await sut.add(addAccountParams)
+
     expect(addAccountRepositorySpy.addAccountParams).toEqual({
       name: addAccountParams.name,
       email: addAccountParams.email,
@@ -70,18 +71,18 @@ describe('DbAddAccount Usecase', () => {
     expect(loadAccountByEmailRepositorySpy.email).toBe(addAccountParams.email)
   })
 
-  it('Should return null if LoadAccountByEmailRepository not return null', async () => {
+  it('Should return false if LoadAccountByEmailRepository returns an account', async () => {
     const { sut, loadAccountByEmailRepositorySpy } = makeSut()
     loadAccountByEmailRepositorySpy.accountModel = mockAccountModel()
 
-    const account = await sut.add(mockAddAccountParams())
-    expect(account).toBeFalsy()
+    const hasCreatedAccount = await sut.add(mockAddAccountParams())
+    expect(hasCreatedAccount).toBeFalsy()
   })
 
-  it('Should return an account on success', async () => {
-    const { sut, addAccountRepositorySpy } = makeSut()
+  it('Should return true if LoadAccountByEmailRepository returns null', async () => {
+    const { sut } = makeSut()
 
-    const account = await sut.add(mockAddAccountParams())
-    expect(account).toEqual(addAccountRepositorySpy.accountModel)
+    const hasCreatedAccount = await sut.add(mockAddAccountParams())
+    expect(hasCreatedAccount).toBeTruthy()
   })
 })
