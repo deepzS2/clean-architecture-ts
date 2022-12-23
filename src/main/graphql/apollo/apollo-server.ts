@@ -9,19 +9,20 @@ import { makeExecutableSchema } from '@graphql-tools/schema'
 
 const handleErrors = async (response: any, errors?: readonly GraphQLError[]): Promise<void> => {
   errors?.forEach(error => {
+    console.log(error.name)
+    console.log(error.originalError?.name)
+
+    response.data = undefined
+
     if (checkError(error, 'UserInputError')) {
       response.http.status = 400
-    }
-
-    if (checkError(error, 'AuthenticationError')) {
+    } else if (checkError(error, 'AuthenticationError')) {
       response.http.status = 401
-    }
-
-    if (checkError(error, 'ForbiddenError')) {
+    } else if (checkError(error, 'ForbiddenError')) {
       response.http.status = 403
+    } else {
+      response.http.status = 500
     }
-
-    response.http.status = 500
   })
 }
 
