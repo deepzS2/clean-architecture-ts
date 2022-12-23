@@ -1,11 +1,10 @@
 import { LoadSurveyByIdRepository, LoadSurveyResultRepository } from '@/data/protocols'
-import { SurveyResultModel } from '@/domain/models'
 import { LoadSurveyResult } from '@/domain/usecases'
 
 export class DbLoadSurveyResult implements LoadSurveyResult {
   constructor (private readonly _loadSurveyResultRepository: LoadSurveyResultRepository, private readonly _loadSurveyByIdRepository: LoadSurveyByIdRepository) {}
 
-  async load (surveyId: string, accountId: string): Promise<SurveyResultModel | null> {
+  async load (surveyId: string, accountId: string): Promise<LoadSurveyResult.Result> {
     let surveyResult = await this._loadSurveyResultRepository.loadBySurveyId(surveyId, accountId)
 
     if (!surveyResult) {

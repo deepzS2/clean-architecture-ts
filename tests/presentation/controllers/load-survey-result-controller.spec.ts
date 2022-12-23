@@ -87,6 +87,6 @@ describe('LoadSurveyResult Controller', () => {
 
     const httpResponse = await sut.handle(mockRequest())
 
-    expect(httpResponse).toEqual(ok(loadSurveyResultSpy.surveyResultModel))
+    expect(httpResponse).toEqual(ok(loadSurveyResultSpy.result))
   })
 })
