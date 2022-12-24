@@ -80,8 +80,6 @@ describe('SurveyResult GraphQL', () => {
 
       const result = await request(app).post('/graphql').set('x-access-token', accessToken).send({ query: surveyResultQuery(surveyId.toString()) })
 
-      console.log(result.body.errors)
-
       expect(result.status).toBe(200)
       expect(result.body.data.surveyResult.question).toBe('Question')
       expect(result.body.data.surveyResult.date).toBe(now.toISOString())
@@ -120,6 +118,60 @@ describe('SurveyResult GraphQL', () => {
       expect(result.status).toBe(403)
       expect(result.body.data).toBeFalsy()
       expect(result.body.errors[0].message).toBe('Access denied')
+    })
+  })
+
+  describe('SurveyResult Mutation', () => {
+    const saveSurveyResultQuery = (surveyId: string, answer: string): string => `
+      mutation {
+        saveSurveyResult(surveyId: "${surveyId}", answer: "${answer}") {
+          surveyId
+          question
+          answers {
+            answer
+            count
+            percent
+            isCurrentAccountAnswer
+          }
+          date
+        }
+      }
+    `
+
+    it('Should return SurveyResult', async () => {
+      const accessToken = await mockAccessToken()
+      const now = new Date()
+
+      const { insertedId: surveyId } = await surveyCollection.insertOne({
+        question: 'Question',
+        answers: [{
+          answer: 'Answer 1',
+          image: 'image'
+        }, {
+          answer: 'Answer 2'
+        }],
+        date: now
+      })
+
+      const result = await request(app).post('/graphql').set('x-access-token', accessToken).send({ query: saveSurveyResultQuery(surveyId.toString(), 'Answer 1') })
+
+      expect(result.status).toBe(200)
+      expect(result.body.data.saveSurveyResult.question).toBe('Question')
+      expect(result.body.data.saveSurveyResult.date).toBe(now.toISOString())
+      expect(result.body.data.saveSurveyResult.answers).toEqual([
+        {
+          answer: 'Answer 1',
+          count: 1,
+          percent: 100,
+          isCurrentAccountAnswer: true
+        },
+        {
+          answer: 'Answer 2',
+          count: 0,
+          percent: 0,
+          isCurrentAccountAnswer: false
+        }
+      ])
     })
   })
 })
