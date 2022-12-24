@@ -60,7 +60,7 @@ describe('Login GraphQL', () => {
     })
   })
 
-  describe('SignUp Query', () => {
+  describe('SignUp Mutation', () => {
     const signUpMutation = (name: string, email: string, password: string, passwordConfirmation: string): string => `
       mutation {
         signUp(name: "${name}", email: "${email}", password: "${password}", passwordConfirmation: "${passwordConfirmation}") {

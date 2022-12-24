@@ -13,24 +13,23 @@ export function authDirectiveTransformer (schema: GraphQLSchema): GraphQLSchema 
         const { resolve } = fieldConfig
         const authMiddleware = makeAuthMiddleware()
 
-        return {
-          ...fieldConfig,
-          resolve: async function (source, args, context, info) {
-            const request = {
-              accessToken: context?.req?.headers?.['x-access-token']
-            }
+        fieldConfig.resolve = async (source, args, context, info) => {
+          const request = {
+            accessToken: context?.req?.headers?.['x-access-token']
+          }
 
-            const httpResponse = await authMiddleware.handle(request)
+          const httpResponse = await authMiddleware.handle(request)
 
-            if (httpResponse.statusCode === 200) {
-              Object.assign(context?.req, httpResponse.body)
-              await resolve?.(source, args, context, info)
-            } else {
-              throw new ForbiddenError(httpResponse.body.message)
-            }
+          if (httpResponse.statusCode === 200) {
+            Object.assign(context?.req, httpResponse.body)
+            return resolve?.call(this, source, args, context, info)
+          } else {
+            throw new ForbiddenError(httpResponse.body.message)
           }
         }
       }
+
+      return fieldConfig
     }
   })
 }

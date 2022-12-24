@@ -14,7 +14,7 @@ export const setupApp = async (): Promise<Express> => {
   setupMiddlewares(app)
   await setupRoutes(app)
 
-  const server = setupApolloServer(app)
+  const server = setupApolloServer()
   await server.start()
   server.applyMiddleware({ app })
 

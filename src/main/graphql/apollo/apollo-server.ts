@@ -1,5 +1,4 @@
 import { ApolloServer } from 'apollo-server-express'
-import { Express } from 'express'
 import { GraphQLError } from 'graphql'
 
 import { authDirectiveTransformer } from '@/main/graphql/directives'
@@ -9,9 +8,6 @@ import { makeExecutableSchema } from '@graphql-tools/schema'
 
 const handleErrors = async (response: any, errors?: readonly GraphQLError[]): Promise<void> => {
   errors?.forEach(error => {
-    console.log(error.name)
-    console.log(error.originalError?.name)
-
     response.data = undefined
 
     if (checkError(error, 'UserInputError')) {
@@ -33,7 +29,7 @@ const checkError = (error: GraphQLError, errorName: string): boolean => {
 let schema = makeExecutableSchema({ resolvers, typeDefs })
 schema = authDirectiveTransformer(schema)
 
-export const setupApolloServer = (app: Express): ApolloServer => new ApolloServer({
+export const setupApolloServer = (): ApolloServer => new ApolloServer({
   schema,
   context: ({ req }) => ({ req }),
   plugins: [{

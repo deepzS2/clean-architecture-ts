@@ -7,13 +7,13 @@ export default gql`
 
   type Survey {
     id: ID!
-    answers: [SurveyAnswerModel!]!
     question: String!
+    answers: [SurveyAnswer!]!
     date: DateTime!
-    didAnswers: Boolean
+    didAnswer: Boolean
   }
-
-  type SurveyAnswerModel {
+  
+  type SurveyAnswer {
     image: String
     answer: String!
   }

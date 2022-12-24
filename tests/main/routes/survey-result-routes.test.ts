@@ -12,7 +12,7 @@ let app: Express
 let accountCollection: Collection
 let surveyCollection: Collection
 
-const makeAccessToken = async (): Promise<string> => {
+const mockAccessToken = async (): Promise<string> => {
   const res = await accountCollection.insertOne({
     name: 'Alan',
     email: 'alanr.developer@hotmail.com',
@@ -65,7 +65,7 @@ describe('Survey Result Routes', () => {
         date: new Date()
       })
 
-      const accessToken = await makeAccessToken()
+      const accessToken = await mockAccessToken()
 
       await request(app)
         .put(`/api/surveys/${res.insertedId.toString()}/results`)
@@ -83,7 +83,7 @@ describe('Survey Result Routes', () => {
     })
 
     it('Should return 200 on load survey result with access token', async () => {
-      const accessToken = await makeAccessToken()
+      const accessToken = await mockAccessToken()
 
       const result = await surveyCollection.insertOne({
         question: 'Question',
